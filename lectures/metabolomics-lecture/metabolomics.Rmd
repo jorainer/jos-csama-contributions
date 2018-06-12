@@ -1,7 +1,7 @@
 ---
 title: "Metabolomics"
-author: "Johannes Rainer<br>Eurac Research, Bolzano, Italy<br>johannes.rainer@eurac.edu github/twitter: jotsetung"
-date: "24 June 2018"
+author: "Johannes Rainer<br><strong>Eurac Research</strong>, Bolzano, Italy<br>johannes.rainer@eurac.edu github/twitter: jotsetung"
+date: "12 July 2018"
 output: 
   ioslides_presentation:
     widescreen: true
@@ -55,7 +55,8 @@ slides > slide {
 - Metabolome influenced by genetic **and** environmental factors.
 </div>
 
-----
+## Metabolites? Metabolomics?
+
 
 Image of glycolisis
 https://en.wikipedia.org/wiki/Glycolysis
@@ -66,56 +67,90 @@ https://en.wikipedia.org/wiki/Glycolysis
 
 - Nuclear Magnetic Resonance (NMR) - not covered here.
 - Mass spectrometry (MS)-based metabolomics.
+- Targeted metabolomics TODO describe
+- Untargeted metabolomics TODO describe
 
 
-## Mass Spectrometry (MS) {.build .dark}
+## Mass Spectrometry (MS)
 
-<div>
-<img style="position:absolute; top:28%;left:7%; width:400px" src="images/MS_ionization_mod.png">
+<div style="position:absolute; top:28%; left:7%; width:400px">
+```{r out.width = "400px", echo = FALSE}
+knitr::include_graphics("images/MS_ionization_mod.png")
+```
 </div>
-<div>
-<img style="position:absolute; top:20%;left:53%; width:300px" src="images/Spectrum1_mod.png">
+
+## Mass Spectrometry (MS)
+
+<div style="position:absolute; top:28%; left:7%; width:400px">
+```{r out.width = "400px", echo = FALSE}
+knitr::include_graphics("images/MS_ionization_mod.png")
+```
+</div>
+<div style="position:absolute; top:20%; left:53%; width:300px">
+```{r out.width = "300px", echo = FALSE}
+knitr::include_graphics("images/Spectrum1_mod.png")
+```
 </div>
 
 <div style="position:absolute; top:65%;left:7%">
-- **Problem:** unable to distinguish between metabolites with the same 
-  mass-to-charge ratio (m/z).
-- **Solution:** separate metabolites prior to MS by another property.
+> - **Problem:** unable to distinguish between metabolites with the same 
+    mass-to-charge ratio (m/z).
+> - **Solution:** separate metabolites prior to MS by another property.
 </div>
   
 <!-- Now comes the incremental LC-MS description -->
 ## | **Liquid Chromatography Mass Spectrometry (LC-MS)** {.notransition}
 
-<img style="position:absolute; top:17%; left:7%; width:700px" src="images/MS_Spectrum1.png">
+```{r out.width = "700px", echo = FALSE}
+knitr::include_graphics("images/MS_Spectrum1.png")
+```
 
 ## | **Liquid Chromatography Mass Spectrometry (LC-MS)** {.notransition}
 
-<img style="position:absolute; top:17%; left:7%; width:700px" src="images/LCMS_Spectrum1.png">
+```{r out.width = "700px", echo = FALSE}
+knitr::include_graphics("images/LCMS_Spectrum1.png")
+```
 
 ## | **Liquid Chromatography Mass Spectrometry (LC-MS)** {.notransition}
 
-<img style="position:absolute; top:17%; left:7%; width:700px" src="images/LCMS_Spectrum2.png">
+```{r out.width = "700px", echo = FALSE}
+knitr::include_graphics("images/LCMS_Spectrum2.png")
+```
 
 ## | **Liquid Chromatography Mass Spectrometry (LC-MS)** {.notransition}
 
-<img style="position:absolute; top:17%; left:7%; width:700px" src="images/LCMS_Spectrum3.png">
+```{r out.width = "700px", echo = FALSE}
+knitr::include_graphics("images/LCMS_Spectrum3.png")
+```
 
 ## | **Liquid Chromatography Mass Spectrometry (LC-MS)** {.notransition}
 
-<img style="position:absolute; top:17%; left:7%; width:700px" src="images/LCMS_Spectrum4.png">
+```{r out.width = "700px", echo = FALSE}
+knitr::include_graphics("images/LCMS_Spectrum4.png")
+```
 
 ## | **Liquid Chromatography Mass Spectrometry (LC-MS)** {.notransition}
 
-<img style="position:absolute; top:17%; left:7%; width:700px" src="images/LCMS_Spectrum5.png">
+```{r out.width = "700px", echo = FALSE}
+knitr::include_graphics("images/LCMS_Spectrum5.png")
+```
 
 ## | **Liquid Chromatography Mass Spectrometry (LC-MS)** {.notransition}
 
-<img style="position:absolute; top:17%; left:7%; width:700px" src="images/LCMS_Spectrum6.png">
+```{r out.width = "700px", echo = FALSE}
+knitr::include_graphics("images/LCMS_Spectrum6.png")
+```
 
 ## | **Liquid Chromatography Mass Spectrometry (LC-MS)** {.notransition}
 
-<img style="position:absolute; top:17%; left:7%; width:700px" src="images/LCMS_Spectrum6-area.png">
+```{r out.width = "700px", echo = FALSE}
+knitr::include_graphics("images/LCMS_Spectrum6.png")
+```
 
+## LC separation
+
+- list some possibilities how metabolites could be separated.
+- Example HILIC.
 
 ## LC-MS data preprocessing
 
@@ -127,27 +162,35 @@ https://en.wikipedia.org/wiki/Glycolysis
 
 - Aim: identify chromatographic peaks in the data.
 
-<img style="position:absolute; top:30%; left:17%; width:500px;" src="images/LCMS-data.png">
+```{r out.width = "500px", echo = FALSE}
+knitr::include_graphics("images/LCMS-data.png")
+```
 
 ## Chromatographic peak detection
 
 - Aim: identify chromatographic peaks in the data.
 
-<img style="position:absolute; top:30%; left:17%; width:500px;" src="images/LCMS-data-peaks.png">
+```{r out.width = "500px", echo = FALSE}
+knitr::include_graphics("images/LCMS-data-peaks.png")
+```
 
 ## Chromatographic peak detection
 
 - __centWave__ [Tautenhahn et al. *BMC Bioinformatics*, 2008]:
 - Step 1: identify *regions of interest*.
 
-<img style="position:absolute; top:35%; left:17%; width:500px;" src="images/centWave-ROI.png">
+```{r out.width = "500px", echo = FALSE}
+knitr::include_graphics("images/centWave-ROI.png")
+```
 
 ## Chromatographic peak detection
 
 - Step 2: peak detection using continuous wavelet transform.
 - Allows detection of peaks with different widths.
 
-<img style="position:absolute; top:35%; left:17%; width:500px;" src="images/centWave-CWT.png">
+```{r out.width = "500px", echo = FALSE}
+knitr::include_graphics("images/centWave-CWT.png")
+```
 
 ## Chromatographic peak detection | with `xcms` {.build}
 
@@ -162,23 +205,49 @@ data <- findChromPeaks(data, param = cwp)
 ```
 
 
-
 ## Alignment
 
 - Chromatography subject to (random and systematic) noise.
 - Same analyte may elute at different time.
 
+TODO add content:
+- image describing alignment.
+- available methods.
+- what is the result?
+- Caveats:
+  - assumes analytes elute in the same order.
+  - heavily LC setup-dependent.
+
+
 ## Correspondence
 
 - Aim: group peaks across samples, assuming that they represent the same ion.
 
+TODO add content:
+- image describing the alignment
+- available methods
+- what is the result? (m/z - rt ranges).
+
+
 ## Normalization
+
+TODO add content:
+- what sources of variation?
+- Crucial to add QC controls in the experiment.
+- available methods (RUV, linear models).
+- MS runs not very expensive, running replicates, QC controls etc usually not a
+  problem.
 
 ## Identification
 
 - Match compounds based on features' m/z.
 - Lab-internal databases with approximate retention times for specific
   compounds.
+
+TODO add content:
+- What databases available
+- up and coming: compound db, similar to `ensembldb` and alike. Problem: unclear
+  license situation.
 
 ## Afternoon lab
 
