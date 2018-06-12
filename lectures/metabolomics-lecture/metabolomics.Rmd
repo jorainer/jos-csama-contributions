@@ -1,0 +1,186 @@
+---
+title: "Metabolomics"
+author: "Johannes Rainer<br>Eurac Research, Bolzano, Italy<br>johannes.rainer@eurac.edu github/twitter: jotsetung"
+date: "24 June 2018"
+output: 
+  ioslides_presentation:
+    widescreen: true
+    fig_width: 7
+    fig_height: 5
+    fig_retina: 2
+    fig_caption: false
+    transition: faster
+    css: jostyle.css
+---
+
+<style type="text/css">
+
+slides > slide:not(.nobackground):after {
+  content: '';
+}
+
+slides > slide {
+    -webkit-transition:none !important;transition:none !important;
+}
+
+.build > * {
+  -webkit-transition: opacity 0.1s ease-in-out;
+  -webkit-transition-delay: 0.1s;
+  -moz-transition: opacity 0.1s ease-in-out 0.1s;
+  -o-transition: opacity 0.1s ease-in-out 0.1s;
+  transition: opacity 0.1s ease-in-out 0.1s;
+}
+
+</style>
+
+## Content
+
+- Introduction to metabolomics
+- Preprocessing of LC-MS data in Bioconductor
+
+## Metabolomics? {.build}
+
+<div>
+- Large-scale study of small molecules (metabolites) in a system (cell, tissue,
+  organism).
+- Metabolites: intermediates and products of cellular processes.
+</div>
+- Metabolome?
+  - **Genome**: what can happen.
+  - **Transcriptome**: what appears to be happening.
+  - **Proteome**: what makes it happen.
+  - **Metabolome**: what actually happened.
+
+<div>
+- Metabolome influenced by genetic **and** environmental factors.
+</div>
+
+----
+
+Image of glycolisis
+https://en.wikipedia.org/wiki/Glycolysis
+
+
+## How can we measure metabolites? {.dark}
+
+
+- Nuclear Magnetic Resonance (NMR) - not covered here.
+- Mass spectrometry (MS)-based metabolomics.
+
+
+## Mass Spectrometry (MS) {.build .dark}
+
+<div>
+<img style="position:absolute; top:28%;left:7%; width:400px" src="images/MS_ionization_mod.png">
+</div>
+<div>
+<img style="position:absolute; top:20%;left:53%; width:300px" src="images/Spectrum1_mod.png">
+</div>
+
+<div style="position:absolute; top:65%;left:7%">
+- **Problem:** unable to distinguish between metabolites with the same 
+  mass-to-charge ratio (m/z).
+- **Solution:** separate metabolites prior to MS by another property.
+</div>
+  
+<!-- Now comes the incremental LC-MS description -->
+## | **Liquid Chromatography Mass Spectrometry (LC-MS)** {.notransition}
+
+<img style="position:absolute; top:17%; left:7%; width:700px" src="images/MS_Spectrum1.png">
+
+## | **Liquid Chromatography Mass Spectrometry (LC-MS)** {.notransition}
+
+<img style="position:absolute; top:17%; left:7%; width:700px" src="images/LCMS_Spectrum1.png">
+
+## | **Liquid Chromatography Mass Spectrometry (LC-MS)** {.notransition}
+
+<img style="position:absolute; top:17%; left:7%; width:700px" src="images/LCMS_Spectrum2.png">
+
+## | **Liquid Chromatography Mass Spectrometry (LC-MS)** {.notransition}
+
+<img style="position:absolute; top:17%; left:7%; width:700px" src="images/LCMS_Spectrum3.png">
+
+## | **Liquid Chromatography Mass Spectrometry (LC-MS)** {.notransition}
+
+<img style="position:absolute; top:17%; left:7%; width:700px" src="images/LCMS_Spectrum4.png">
+
+## | **Liquid Chromatography Mass Spectrometry (LC-MS)** {.notransition}
+
+<img style="position:absolute; top:17%; left:7%; width:700px" src="images/LCMS_Spectrum5.png">
+
+## | **Liquid Chromatography Mass Spectrometry (LC-MS)** {.notransition}
+
+<img style="position:absolute; top:17%; left:7%; width:700px" src="images/LCMS_Spectrum6.png">
+
+## | **Liquid Chromatography Mass Spectrometry (LC-MS)** {.notransition}
+
+<img style="position:absolute; top:17%; left:7%; width:700px" src="images/LCMS_Spectrum6-area.png">
+
+
+## LC-MS data preprocessing
+
+> - Chromatographic peak detection
+> - Alignment
+> - Correspondence
+
+## Chromatographic peak detection
+
+- Aim: identify chromatographic peaks in the data.
+
+<img style="position:absolute; top:30%; left:17%; width:500px;" src="images/LCMS-data.png">
+
+## Chromatographic peak detection
+
+- Aim: identify chromatographic peaks in the data.
+
+<img style="position:absolute; top:30%; left:17%; width:500px;" src="images/LCMS-data-peaks.png">
+
+## Chromatographic peak detection
+
+- __centWave__ [Tautenhahn et al. *BMC Bioinformatics*, 2008]:
+- Step 1: identify *regions of interest*.
+
+<img style="position:absolute; top:35%; left:17%; width:500px;" src="images/centWave-ROI.png">
+
+## Chromatographic peak detection
+
+- Step 2: peak detection using continuous wavelet transform.
+- Allows detection of peaks with different widths.
+
+<img style="position:absolute; top:35%; left:17%; width:500px;" src="images/centWave-CWT.png">
+
+## Chromatographic peak detection | with `xcms` {.build}
+
+- After reading the data with `readMSData` (`MSnbase` package):
+- `findChromPeaks` function, passing settings along with an algorithm-specific
+  *parameter* object.
+
+```{r eval = FALSE}
+## Perform centWave peak detection on the MSnExp object
+cwp <- CentWaveParam(peakwidth = c(2, 10), snthresh = 5)
+data <- findChromPeaks(data, param = cwp)
+```
+
+
+
+## Alignment
+
+- Chromatography subject to (random and systematic) noise.
+- Same analyte may elute at different time.
+
+## Correspondence
+
+- Aim: group peaks across samples, assuming that they represent the same ion.
+
+## Normalization
+
+## Identification
+
+- Match compounds based on features' m/z.
+- Lab-internal databases with approximate retention times for specific
+  compounds.
+
+## Afternoon lab
+
+- LC-MS data handling (`MSnbase`).
+- LC-MS data preprocessing using `xcms`.
