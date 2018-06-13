@@ -308,17 +308,22 @@ knitr::include_graphics("images/alignment.png")
 ## Alignment
 
 - How strong the shifts are depends on the LC-setup.
+
 - Many algorithms available [Smith et al. *Brief Bioinformatics* 2013]
-- Main assumption: analytes elute in the same order.
+
+> - Main assumption: analytes elute in the same order.
+
+> - `xcms`: `adjustRtime` function with `PeakDensityParam` [Smith et al. *Anal. chem.*
+    2006] or `ObiwarpParam` [Prince et al. *Anal. chem.* 2006].
 
 
-## Correspondence
+## Correspondence {.build}
 
 - Aim: group peaks across samples, assuming they represent the same ion.
 - Depends on proper alignment.
 
 ```{r echo = FALSE, out.width = "700px"}
-knitr::include_graphics("images/correspondence_01.png")
+knitr::include_graphics("images/correspondence2_01.png")
 ```
 
 ## Correspondence
@@ -327,7 +332,7 @@ knitr::include_graphics("images/correspondence_01.png")
 - Depends on proper alignment.
 
 ```{r echo = FALSE, out.width = "700px"}
-knitr::include_graphics("images/correspondence_02.png")
+knitr::include_graphics("images/correspondence2_02.png")
 ```
 
 ## Correspondence
@@ -336,36 +341,48 @@ knitr::include_graphics("images/correspondence_02.png")
 - Depends on proper alignment.
 
 ```{r echo = FALSE, out.width = "700px"}
-knitr::include_graphics("images/correspondence_03.png")
+knitr::include_graphics("images/correspondence2_03.png")
 ```
 
 
+## Correspondence {.build}
 
-## Correspondence
+- `xcms`: `groupChromPeaks` with `NearestPeaksParam` [Katajamaa et
+  al. *Bioinformatics* 2006] and `PeakDensityParam` [Smith et al. *Anal. chem.*
+  2006].
 
-TODO add content:
-- image describing the alignment
-- available methods
-- what is the result? (m/z - rt ranges).
+<div>
+- *peak density* approach:
 
+```{r echo = FALSE, out.width = "700px"}
+knitr::include_graphics("images/correspondence2_density.png")
+```
+</div>
 
 ## Normalization
 
 TODO add content:
+
 - what sources of variation?
+
 - Crucial to add QC controls in the experiment.
+
 - available methods (RUV, linear models).
+
 - MS runs not very expensive, running replicates, QC controls etc usually not a
   problem.
 
 ## Identification
 
 - Match compounds based on features' m/z.
+
 - Lab-internal databases with approximate retention times for specific
   compounds.
 
 TODO add content:
+
 - What databases available
+
 - up and coming: compound db, similar to `ensembldb` and alike. Problem: unclear
   license situation.
 
