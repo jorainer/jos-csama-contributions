@@ -57,9 +57,67 @@ slides > slide {
 
 ## Metabolites? Metabolomics?
 
+- [Glycolysis](https://en.wikipedia.org/wiki/Glycolysis)
 
-Image of glycolisis
-https://en.wikipedia.org/wiki/Glycolysis
+```{r out.width = "800px", echo = FALSE}
+knitr::include_graphics("images/glycolysis_01.png")
+```
+
+## Metabolites? Metabolomics?
+
+- [Glycolysis](https://en.wikipedia.org/wiki/Glycolysis)
+
+```{r out.width = "800px", echo = FALSE}
+knitr::include_graphics("images/glycolysis_02.png")
+```
+
+## Metabolites? Metabolomics?
+
+- [Glycolysis](https://en.wikipedia.org/wiki/Glycolysis)
+
+```{r out.width = "800px", echo = FALSE}
+knitr::include_graphics("images/glycolysis_03.png")
+```
+
+## Metabolites? Metabolomics?
+
+- [Glycolysis](https://en.wikipedia.org/wiki/Glycolysis)
+
+```{r out.width = "800px", echo = FALSE}
+knitr::include_graphics("images/glycolysis_04.png")
+```
+
+## Metabolites? Metabolomics?
+
+- [Glycolysis](https://en.wikipedia.org/wiki/Glycolysis)
+
+```{r out.width = "800px", echo = FALSE}
+knitr::include_graphics("images/glycolysis_06.png")
+```
+
+## Metabolites? Metabolomics?
+
+- [Glycolysis](https://en.wikipedia.org/wiki/Glycolysis)
+
+```{r out.width = "800px", echo = FALSE}
+knitr::include_graphics("images/glycolysis_10.png")
+```
+
+## Metabolites? Metabolomics?
+
+- [Glycolysis](https://en.wikipedia.org/wiki/Glycolysis)
+
+```{r out.width = "800px", echo = FALSE}
+knitr::include_graphics("images/glycolysis_11.png")
+```
+
+## Metabolites? Metabolomics?
+
+- [Glycolysis](https://en.wikipedia.org/wiki/Glycolysis)
+
+```{r out.width = "800px", echo = FALSE}
+knitr::include_graphics("images/glycolysis_12.png")
+```
 
 
 ## How can we measure metabolites? {.dark}
@@ -176,6 +234,19 @@ knitr::include_graphics("images/LCMS-data-peaks.png")
 
 ## Chromatographic peak detection
 
+- Aim: identify chromatographic peaks in the data.
+
+```{r out.width = "500px", echo = FALSE}
+knitr::include_graphics("images/LCMS-data-peaks.png")
+```
+<div style = "position:absolute; left:520px; top:300px;">
+- allow different rt-widths
+- allow some scattering on m/z
+- identify *correct* boundaries
+</div>
+
+## Chromatographic peak detection
+
 - __centWave__ [Tautenhahn et al. *BMC Bioinformatics*, 2008]:
 - Step 1: identify *regions of interest*.
 
@@ -192,36 +263,85 @@ knitr::include_graphics("images/centWave-ROI.png")
 knitr::include_graphics("images/centWave-CWT.png")
 ```
 
-## Chromatographic peak detection | with `xcms` {.build}
+## Chromatographic peak detection {.build}
 
 - After reading the data with `readMSData` (`MSnbase` package):
-- `findChromPeaks` function, passing settings along with an algorithm-specific
-  *parameter* object.
+- `xcms`: `findChromPeaks` function, passing settings along with an
+  algorithm-specific *parameter* object.
 
-```{r eval = FALSE}
-## Perform centWave peak detection on the MSnExp object
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+library(xcms)
+library(doParallel)
+registerDoParallel(2)
+register(bpstart(DoparParam()), default = TRUE) 
+fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
+
+## Define a data.frame with additional information on the files.
+pd <- data.frame(file = basename(fls), injection_idx = c(1, 19),
+                 sample = c("POOL_1", "POOL_2"), group = "POOL")
+## Read the data
+data <- readMSData(fls, pdata = new("NAnnotatedDataFrame", pd), 
+                   mode = "onDisk")
+data <- pickPeaks(smooth(data, method = "SavitzkyGolay", halfWindowSize = 6))
+```
+
+```{r message = FALSE}
 cwp <- CentWaveParam(peakwidth = c(2, 10), snthresh = 5)
 data <- findChromPeaks(data, param = cwp)
+head(chromPeaks(data), n = 3)
 ```
+
+
+
+## Alignment {.build}
+
+- Chromatography subject to (random and systematic) noise.
+- Same analyte may elute at slightly different time.
+
+```{r echo = FALSE, out.width = "370px"}
+knitr::include_graphics("images/alignment.png")
+```
+
+- Shifts are LC-setup dependent, seem to be also analyte dependent.
 
 
 ## Alignment
 
-- Chromatography subject to (random and systematic) noise.
-- Same analyte may elute at different time.
-
-TODO add content:
-- image describing alignment.
-- available methods.
-- what is the result?
-- Caveats:
-  - assumes analytes elute in the same order.
-  - heavily LC setup-dependent.
+- How strong the shifts are depends on the LC-setup.
+- Many algorithms available [Smith et al. *Brief Bioinformatics* 2013]
+- Main assumption: analytes elute in the same order.
 
 
 ## Correspondence
 
-- Aim: group peaks across samples, assuming that they represent the same ion.
+- Aim: group peaks across samples, assuming they represent the same ion.
+- Depends on proper alignment.
+
+```{r echo = FALSE, out.width = "700px"}
+knitr::include_graphics("images/correspondence_01.png")
+```
+
+## Correspondence
+
+- Aim: group peaks across samples, assuming they represent the same ion.
+- Depends on proper alignment.
+
+```{r echo = FALSE, out.width = "700px"}
+knitr::include_graphics("images/correspondence_02.png")
+```
+
+## Correspondence
+
+- Aim: group peaks across samples, assuming they represent the same ion.
+- Depends on proper alignment.
+
+```{r echo = FALSE, out.width = "700px"}
+knitr::include_graphics("images/correspondence_03.png")
+```
+
+
+
+## Correspondence
 
 TODO add content:
 - image describing the alignment
