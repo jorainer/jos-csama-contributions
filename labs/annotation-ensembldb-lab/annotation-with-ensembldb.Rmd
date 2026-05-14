@@ -1,0 +1,234 @@
+---
+title: "RNA-seq workflow: annotation using `ensembldb`"
+subtitle: CSAMA 2018 version 
+author:
+- name: Michael I. Love
+  affiliation: Departments of Biostatistics and Genetics, UNC-Chapel Hill, Chapel Hill, NC, US
+- name: Charlotte Soneson
+  affiliation: Institute for Molecular Life Sciences, Univ. Zurich, CH
+- name: Johannes Rainer
+  affiliation: Institute for Biomedicine, Eurac Research, Bolzano, Italy
+date: 13 June 2017
+output: BiocStyle::html_document
+bibliography: bibliography.bib
+vignette: >
+  %\VignetteIndexEntry{Annotation with ensembldb}
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+<!-- to compile this: rmarkdown::render("annotation-with-ensembldb.Rmd") -->
+
+```{r style, echo=FALSE, message=FALSE, warning=FALSE, results="asis"}
+library("BiocStyle")
+library("knitr")
+library("rmarkdown")
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE,
+               cache = FALSE, fig.width = 5, fig.height = 5)
+```
+
+**COPY THE STUFF OVER FROM THE CSAMA FOLDER**
+
+That below is from the previous lab.
+
+
+# Abstract
+
+What this lab is about.
+
+# Introduction
+
+General info on `ensembldb`, what we can do with it etc.
+
+## Setup
+
+
+# Annotating with `ensembldb`
+
+Annotating a table or similar.
+
+# Lookup of specific information
+
+Searching annotations etc.
+
+# Plotting transcript models
+
+
+
+
+
+# Annotating and exporting results
+
+Our result table so far only contains the Ensembl gene
+IDs, but alternative gene names may be more informative for
+interpretation.  Bioconductor's annotation packages help with mapping
+various ID schemes to each other.
+We load the `r Biocpkg("AnnotationDbi")` package and the annotation package
+`r Biocannopkg("org.Hs.eg.db")`:
+
+```{r}
+library("AnnotationDbi")
+library("org.Hs.eg.db")
+```
+
+This is the organism annotation package ("org") for
+*Homo sapiens* ("Hs"), organized as an *AnnotationDbi*
+database package ("db"), using Entrez Gene IDs ("eg") as primary key.
+To get a list of all available key types, use:
+
+```{r}
+columns(org.Hs.eg.db)
+```
+
+We can use the *mapIds* function to add individual columns to our results
+table. We provide the row names of our results table as a key, and
+specify that `keytype = ENSEMBL`. The `column` argument tells the
+*mapIds* function which information we want, and the `multiVals`
+argument tells the function what to do if there are multiple possible
+values for a single input value. Here we ask to just give us back the
+first one that occurs in the database.
+To add the gene symbol and Entrez ID, we call *mapIds* twice.
+
+```{r}
+res$symbol <- mapIds(org.Hs.eg.db,
+                     keys = row.names(res),
+                     column = "SYMBOL",
+                     keytype = "ENSEMBL",
+                     multiVals = "first")
+res$entrez <- mapIds(org.Hs.eg.db,
+                     keys = row.names(res),
+                     column = "ENTREZID",
+                     keytype = "ENSEMBL",
+                     multiVals = "first")
+```
+
+Now the results have the desired external gene IDs:
+
+```{r}
+resOrdered <- res[order(res$padj),]
+head(resOrdered)
+```
+
+## Exporting results
+
+You can easily save the results table in a CSV file that you can
+then share or load with a spreadsheet program such as Excel. The call to
+*as.data.frame* is necessary to convert the *DataFrame* object
+(`r Biocpkg("IRanges")` package) to a *data.frame* object that can be
+processed by *write.csv*. Here, we take just the top 100 genes for
+demonstration.
+
+```{r eval = FALSE}
+resOrderedDF <- as.data.frame(resOrdered)[1:100, ]
+write.csv(resOrderedDF, file = "results.csv")
+```
+
+A more sophisticated way for exporting results the Bioconductor
+package `r Biocpkg("ReportingTools")` [@Huntley2013ReportingTools].
+*ReportingTools* will automatically generate dynamic HTML documents,
+including links to external databases using gene identifiers
+and boxplots summarizing the normalized counts across groups.
+See the *ReportingTools* vignettes for full details. The simplest
+version of creating a dynamic *ReportingTools* report is performed
+with the following code:
+
+```{r eval = FALSE}
+library("ReportingTools")
+htmlRep <- HTMLReport(shortName = "report", title = "My report",
+                      reportDirectory = "./report")
+publish(resOrderedDF, htmlRep)
+url <- finish(htmlRep)
+browseURL(url)
+```
+
+## Plotting fold changes in genomic space
+
+If we have used the *summarizeOverlaps* function to count the reads,
+then our *DESeqDataSet* object is built on top of ready-to-use
+Bioconductor objects specifying the genomic coordinates of the genes. We
+can therefore easily plot our differential expression results in
+genomic space. While the *results* function by default returns a
+*DataFrame*, using the `format` argument, we can ask for *GRanges* or
+*GRangesList* output.
+
+```{r}
+resGR <- results(dds, lfcThreshold = 1, format = "GRanges")
+resGR
+```
+
+We need to add the symbol again for labeling the genes on the plot:
+
+```{r}
+resGR$symbol <- mapIds(org.Hs.eg.db, names(resGR), "SYMBOL", "ENSEMBL")
+```
+
+We will use the `r Biocpkg("Gviz")` package for plotting the GRanges
+and associated metadata: the log fold changes due to dexamethasone treatment.
+
+```{r}
+library("Gviz")
+```
+
+The following code chunk specifies a window of 1 million base pairs
+upstream and downstream from the gene with the smallest *p* value.
+We create a subset of our full results, for genes within the window.
+We add the gene symbol as a name if the symbol exists and is not duplicated in
+our subset.
+
+```{r}
+window <- resGR[topGene] + 1e6
+strand(window) <- "*"
+resGRsub <- resGR[resGR %over% window]
+naOrDup <- is.na(resGRsub$symbol) | duplicated(resGRsub$symbol)
+resGRsub$group <- ifelse(naOrDup, names(resGRsub), resGRsub$symbol)
+```
+
+We create a vector specifying if the genes in this subset had a low
+value of `padj`.
+
+```{r}
+status <- factor(ifelse(resGRsub$padj < 0.1 & !is.na(resGRsub$padj),
+                     "sig", "notsig"))
+```
+
+We can then plot the results using `r Biocpkg("Gviz")` functions
+(figure below). We
+create an axis track specifying our location in the genome, a track
+that will show the genes and their names, colored by significance,
+and a data track that will draw vertical bars showing the moderated
+log fold change produced by *DESeq2*, which we know are only large
+when the effect is well supported by the information in the counts.
+
+```{r gvizplot}
+options(ucscChromosomeNames = FALSE)
+g <- GenomeAxisTrack()
+a <- AnnotationTrack(resGRsub, name = "gene ranges", feature = status)
+d <- DataTrack(resGRsub, data = "log2FoldChange", baseline = 0,
+               type = "h", name = "log2 fold change", strand = "+")
+plotTracks(list(g, d, a), groupAnnotation = "group",
+           notsig = "grey", sig = "hotpink")
+```
+
+**log2 fold changes in genomic region surrounding the gene with smallest
+  adjusted *p* value.** Genes highlighted in pink have adjusted *p*
+  value less than 0.1.
+
+<a id="batch"></a>
+
+# Removing hidden batch effects
+
+Suppose we did not know that there were different cell lines involved
+in the experiment, only that there was treatment with
+dexamethasone. The cell line effect on the counts then would represent
+some hidden and unwanted variation that might be affecting
+many or all of the genes in the dataset. We can use statistical
+methods designed for RNA-seq from the `r Biocpkg("sva")` package [@Leek2014Svaseq] to
+detect such groupings of the samples, and then we can add these to the
+*DESeqDataSet* design, in order to account for them. The *SVA*
+package uses the term *surrogate variables* for the estimated
+variables that we want to account for in our analysis. Another
+package for detecting hidden batches is the `r Biocpkg("RUVSeq")`
+package [@Risso2014Normalization], with the acronym "Remove Unwanted Variation".
+
+```{r}
+library("sva")
+```

@@ -1,6 +1,13 @@
+/* slides > slide.backdrop { */
+/*   background: white; */
+/*   border-bottom: 0px; */
+/*   box-shadow: 0 0 0; */
+/* } */
+
 slides > slide {
   font-family: 'Open Sans', Helvetica, Arial, sans-serif;
   border-bottom: 3px solid #d04c29;
+  /* background: #ffffff; */
   /* color: #838b93; */
   /* color: #1e2b38; */
   /* color: #34495e; */
