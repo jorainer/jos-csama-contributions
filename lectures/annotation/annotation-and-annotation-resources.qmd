@@ -1,0 +1,654 @@
+---
+title: "Annotation and Annotation Resources"
+subtitle: "^ with content from Lori Shepherd Kern, Martin Morgan and James W. MacDonald\n**CSAMA 2026**"
+from: markdown+emoji
+author:
+  - name: Johannes Rainer
+    orcid: 0000-0002-6977-7147
+    affiliations:
+      - id: IfB
+        name: Institute for Biomedicine, Eurac Research
+format:
+  revealjs:
+    theme: dracula
+    transition: fade
+    transition-speed: fast
+    embed-resources: true
+    scrollable: true
+    nostretch: true
+    smaller: true
+    auto-stretch: false
+    controls-layout: bottom-right
+bibliography: references.bib
+---
+
+```{r, echo = FALSE}
+#' Required libraries
+req_libs <- c("AnnotationHub", "org.Hs.eg.db", "airway", "EnsDb.Hsapiens.v75",
+              "Rsamtools", "GenomicAlignments", "reactome.db")
+tmp <- lapply(req_libs, function(z) {
+    if (!require(z, quietly = TRUE, character.only = TRUE))
+        BiocManager::install(z)
+})
+```
+
+# Introduction
+
+## Data analysis
+
+::: {.r-stack}
+![](images/RR-sketch-03-bg.png){.fragment width="800"}
+
+![](images/RR-sketch-04-bg.png){.fragment width="800"}
+:::
+
+. . .
+
+- *Annotation*: external data fed into an analysis to make *sense* of quantified
+  entities.
+
+## Annotation
+
+::: {.incremental}
+- put a (new or different) label on an entity
+- *entity*: something measured with an assay (RNA, molecule, cell)
+- *label*: commonly used (standard) identifier (e.g. gene name)
+- sounds trivial, but is very important task in computational biology
+- examples:
+  - map positions on the genome to transcripts
+  - map genes to biological pathways
+  - annotate cell types based on presence of marker genes
+- :dart: enable or assist in interpretation; make biological sense of assay
+  data.
+:::
+
+## In this presentation
+
+. . .
+
+- :one: provide some general information on annotation
+- :two: give you an overview on available annotation resources
+- :three: short use cases (with code)
+
+# {.center}
+
+::: {.r-fit-text}
+:one: General information on annotation
+:::
+
+## What do we need for annotation?
+
+::: {.incremental}
+- :one: an **annotation resource**: reference information on entities or a
+  mapping of one type of identifiers to another.
+- :two: a **rule** that defines how to assign labels to entities
+  - annotation through similarity: sequence similarity, spectral similarity
+  - direct mapping 
+:::
+
+## What do we need for annotation? {transition="none"}
+
+- :one: an **annotation resource**: reference information on entities or a
+  mapping of one type of identifiers to another.
+- :two: a **rule** that defines how to assign labels to entities
+- *examples*
+  - map between gene identifiers (Ensembl, NCBI, ...)
+  
+  IMAGE
+  
+## What do we need for annotation? {transition="none"}
+
+- :one: an **annotation resource**: reference information on entities or a
+  mapping of one type of identifiers to another.
+- :two: a **rule** that defines how to assign labels to entities
+- *examples*
+  - annotate through sequence similarity: map short reads to genome
+  
+  IMAGE
+
+## What do we need for annotation? {transition="none"}
+
+- :one: an **annotation resource**: reference information on entities or a
+  mapping of one type of identifiers to another.
+- :two: a **rule** that defines how to assign labels to entities
+- *examples* (maybe through drawings?)
+  - cell types through presence of marker genes
+
+IMAGE
+
+. . .
+
+- :warning: there might be uncertainty in annotation
+
+## Reproducibility
+
+In order to guarantee **reproducibility** of annotation:
+
+:white_check_mark: annotation resource has to be **versioned** and **findable**
+
+. . .
+
+:no_good: dynamic annotation resources (daily updates) without the possibility
+to access a specific version
+
+. . .
+
+:white_check_mark: the **same version** should be used throughout the **whole**
+analysis
+
+. . .
+
+:no_good: using a different genome release for RNA-seq alignment and gene
+counting.
+
+## Standardization and metadata
+
+- **Common nomenclature is required**
+- It's great if you can assign a name to an entity - but also other researchers
+  should understand what you mean.
+
+. . .
+
+- *example*: synonyms
+![](images/NCBI-BCL2L11-BIM-BAM-BOD.png)
+
+. . .
+
+- Synonyms: aliases or previous names of entities.
+
+. . .
+
+- Can be tricky if different names are used across publications.
+- :point_right: use the official HGNC gene name! 
+
+## Standardization and metadata
+
+- :scream_cat: ... it can always be worse ...
+
+. . .
+
+![](images/HMDB-synonyms.png)
+
+*Why?* annotation resource was compiled from community provided information.
+
+. . .
+
+- **Standardization and common nomenclature is important!**
+- Standardization is important for human consumers, but even more so for
+  computational use (including AI).
+
+# {.center}
+
+::: {.r-fit-text}
+:two: Annotation resources
+:::
+
+## Annotation resources
+
+- Where can you get annotations from?
+
+## Annotation resources
+
+**For genes**
+
+- [NCBI](https://www.ncbi.nlm.nih.gov/), [Ensembl](https://ensembl.org), ...
+
+. . .
+
+![](images/NCBI-BCL2L11.png){.absolute width="800"}
+
+. . .
+
+![](images/Ensembl.png){width="800"}
+
+
+## Annotation resources
+
+**For proteins**
+
+- [UniProt](https://www.uniprot.org/), [Ensembl](https://ensembl.org),
+  ...
+
+. . .
+
+![](images/UniProt.png){width="800"}
+
+
+## Annotation resources
+
+**For small molecules**
+
+- [HMDB](https://hmdb.ca), [MassBank](https://massbank.eu), ...
+
+. . .
+
+![](images/HMDB.png){.absolute width="800"}
+
+. . .
+
+![](images/MassBank.png){width="800"}
+
+
+## Annotation resources
+
+**Pathways**
+
+- [reactome](https://reactome.org/),
+  [wikipathways](https://www.wikipathways.org/), [KEGG](https://www.kegg.jp/)
+
+. . .
+
+![](images/reactome.png){width="800"}
+
+
+## Annotation resources
+
+**Pathways**
+
+- [reactome](https://reactome.org/),
+  [wikipathways](https://www.wikipathways.org/), [KEGG](https://www.kegg.jp/)
+
+![](images/wikipaths.png){width="800"}
+
+
+## Annotation resources
+
+**Pathways**
+
+- [reactome](https://reactome.org/),
+  [wikipathways](https://www.wikipathways.org/), [KEGG](https://www.kegg.jp/)
+
+![](images/kegg.png){width="800"}
+
+. . .
+
+- :unamused: some annotation resources use their own data/file format making it
+  cumbersome to include them in data analysis workflows.
+
+
+## Bioconductor annotation resources
+
+. . .
+
+- Format standardized to simplify integration into the analysis (big thanks to
+  the maintainers! :raised_hands:)
+- *AnnotationDbi* package defines a common interface to extract information from
+  annotation resources: `mapIds()` and `select()` functions.
+
+## Bioconductor annotation resources
+
+. . .
+
+![](images/AnnotationHub.png){.absolute top=70 right=80 height="80"}
+- :ring: one to get them all: *AnnotationHub*
+
+. . .
+
+- Centrally managed annotation resources.
+
+```{r, echo = TRUE}
+library(AnnotationHub)
+
+#' Synchronize and cache AnnotationHub information locally
+ah <- AnnotationHub()
+```
+
+. . .
+
+```{r}
+#| echo: TRUE
+#| output-location: fragment
+#' List all available resources
+ah
+```
+
+- :information_source: many resources are community provided :muscle:.
+- Resources come in variety of different formats and data types.
+
+. . .
+
+```{r}
+#| echo: TRUE
+#| output-location: fragment
+#' List data class
+table(ah$rdataclass)
+```
+
+. . .
+
+- Resource can be a reference to an external file
+
+```{r}
+#| echo: TRUE
+query(ah, c("ensembl", "TwoBitFile"))
+```
+
+. . .
+
+```{r}
+#| echo: TRUE
+ah["AH49592"]
+```
+
+. . .
+
+- Or a dedicated R object.
+- We retrieve one such object from *AnnotationHub*.
+
+```{r}
+#| echo: TRUE
+query(ah, c("Hsapiens", "EnsDb"))
+```
+
+```{r}
+#| echo: TRUE
+edb <- ah[["AH119325"]]
+edb
+```
+
+- First time data is downloaded, subsequent calls will load the data from the
+  cache :muscle:
+
+. . .
+
+## Bioconductor annotation resources
+
+- ... and there are also dedicated R packages with specific annotations.
+- *example*: identifiers and metadata for human genes.
+
+```{r}
+#| echo: TRUE
+library(org.Hs.eg.db)
+org.Hs.eg.db
+```
+
+- Most annotation resources provide mapping between gene identifiers or mapping
+  to e.g. pathways.
+
+## Position-relative annotations {transition="none"}
+
+- Mapping between entities (genes, exons) and positions (on the genome, within a
+  transcript).
+- `GenomicFeatures::TxDb` resources.
+
+## Position-relative annotations {transition="none"}
+
+![](images/ensembldb.png){.absolute top=150 right=80 height="80"}
+
+- Mapping between entities (genes, exons, **protein domains**) and positions (on
+  the genome, within a transcript, within a **protein**).
+- `GenomicFeatures::TxDb` and `ensembldb::EnsDb` resources.
+
+## Position-relative annotations {transition="none"}
+
+![](images/ensembldb.png){.absolute top=150 right=80 height="80"}
+
+- Mapping between entities (genes, exons, protein domains) and positions (on
+  the genome, within a transcript, within a protein).
+- `GenomicFeatures::TxDb` and `ensembldb::EnsDb` resources.
+- Organism and release-specific data (SQLite databases).
+
+- Positional information: genomic position of exons
+
+```{r}
+#| echo: TRUE
+#| output-location: fragment
+exons(edb)
+```
+
+# {.center}
+
+::: {.r-fit-text}
+:three: Use cases
+:::
+
+## Annotating RNA-seq, raw reads
+
+
+**Drawing**
+
+- short RNA read -> map to genome, get positional mappings.
+- positions: use TxDb, EnsDb to get 
+
+
+## Annotation RNA-seq, raw reads
+
+- *example* [@love_rna-seq_2015]:
+  - bulk RNA-seq data
+  - alignment against genome using [STAR](https://code.google.com/p/rna-star/)
+
+```{r}
+#| echo: TRUE
+library(airway)
+dir(system.file("extdata", package = "airway"))
+```
+
+. . .
+
+- *task*: quantifying reads per gene.
+- *required*: positional (genome) information for genes (exons)
+- :point_right: get annotation resource for genome version / Ensembl release.
+
+. . .
+
+```{r}
+#| echo: TRUE
+library(EnsDb.Hsapiens.v75)
+edb <- EnsDb.Hsapiens.v75
+```
+
+. . .
+
+- Get positional information for exons
+
+```{r}
+#| echo: TRUE
+exns <- exonsBy(edb, by = "gene")
+exns
+```
+
+. . .
+
+- Get the BAM files with the alignment results for the present experiment.
+
+```{r}
+#| echo: TRUE
+#' Get the BAM file names in the *airway* package
+f <- dir(system.file("extdata", package = "airway"),
+         pattern = "bam$", full.names = TRUE)
+
+library("Rsamtools")
+bamfiles <- BamFileList(f, yieldSize = 2000000)
+```
+
+. . .
+
+- Use `GenomicAlignments::summarizeOverlaps()` to count reads falling within
+  exon boundaries.
+
+```{r}
+#| echo: TRUE
+library(GenomicAlignments)
+se <- summarizeOverlaps(features = exns, reads=bamfiles,
+                        mode = "Union", singleEnd = FALSE,
+                        ignore.strand = TRUE,
+                        fragments = TRUE)
+se
+```
+
+. . .
+
+- Result: gene count data.
+- :information_source: afternoon labs will use an updated workflow using
+  *Salmon* for alignment against the transcriptome and the *tximeta*
+  Bioconductor package for managing data and annotation resources.
+
+## Annotating gene information
+
+- Common task in annotation: add additional metadata to existing identifiers.
+- *example*: bulk RNA-seq data *airway*:
+
+```{r}
+#| echo: TRUE
+#| warning: FALSE
+se
+```
+
+- :information_source: gene quantification data, 8 samples.
+
+. . .
+
+- What gene identifiers do we have?
+
+```{r}
+#| echo: TRUE
+#| output-location: fragment
+#' extract gene identifiers
+ids <- rownames(se)
+head(ids)
+```
+
+. . .
+
+- We've got Ensembl gene IDs.
+- *task*: get official HGNC gene symbols (names) the genes.
+
+. . .
+
+- :point_right: use `AnnotationDbi::mapIds()` with *org.Hs.eg.db*.
+
+```{r}
+#| echo: TRUE
+library(org.Hs.eg.db)
+#' available gene annotations:
+columns(org.Hs.eg.db)
+```
+
+. . .
+
+```{r}
+#| echo: TRUE
+symbols <- mapIds(org.Hs.eg.db, keys = ids, keytype = "ENSEMBL",
+                  column = "SYMBOL", multiVals = "first")
+head(symbols)
+```
+
+. . .
+
+- `multiVals`... to handle ambiguity; default is `"first"` but there are other
+  options too.
+- :information_source: that's one way; we could also use *ensembldb*'s `EnsDb`
+  resources (to ensure we use the same release versions).
+
+. . .
+
+```{r}
+#| echo: TRUE
+symbols <- mapIds(edb, keys = ids, keytype = "GENEID",
+                  column = "SYMBOL", multiVals = "first")
+```
+
+## Annotation for enrichment analysis
+
+- :dart: going one step further ... annotating genes to biological pathways.
+
+#### Drawing:
+
+- gene identifiers left, pathways right.
+- need to map between them using the same identifier.
+- map Ensembl genes to EntrezIds.
+
+## Annotation for enrichment analysis
+
+- Enrichment analysis for biological pathways from
+  [reactome](https://reactome.org).
+- *example*: use the *reactome.db* package to get the list of genes per pathway.
+
+```{r}
+#| echo: TRUE
+#| output-location: fragment
+library(reactome.db)
+
+#' Available data
+columns(reactome.db)
+```
+
+. . .
+
+- :information_source: gene identifiers: NCBI EntrezGene IDs.
+- get gene and pathway IDs for all genes.
+
+. . .
+
+```{r}
+#| echo: TRUE
+#| output-location: fragment
+mapping <- select(reactome.db, keys = keys(reactome.db),
+                  columns = c("ENTREZID", "PATHID"))
+head(mapping)
+```
+
+. . .
+
+- Convert into a `list` of genes per pathway.
+
+```{r}
+#| echo: TRUE
+#| output-location: fragment
+gs <- split(mapping$ENTREZID, mapping$PATHID)
+gs[1:2]
+```
+
+. . .
+
+- Annotate the Ensembl gene IDs to NCBI EntrezGene IDs with `mapIds()`.
+
+```{r}
+#| echo: TRUE
+#| warning: FALSE
+entrez <- mapIds(edb, keys = rownames(se), keytype = "GENEID",
+                 column = "ENTREZID", multiVals = "first")
+```
+
+. . .
+
+- :point_right: use this definition of gene sets in enrichment functions,
+  such as `EnrichmentBrowser::sbea()` or others.
+  
+. . .
+
+```{r}
+#| echo: TRUE
+#| eval: FALSE
+library(EnrichmentBrowser)
+
+rownames(se) <- entrez
+#' ... assuming differential expression analysis was done too ...
+res <- sbea(method = "ora", se, gs = gs)
+```
+
+. . .
+
+- :information_source: *EnrichmentBrowser* makes the mapping easier with
+  its`idMap()` and `getGenesets()` functions.
+
+
+## Annotating mass spectrometry data
+
+- ... more on that on Thursday ...
+
+## Annotating cell types
+
+- single cell things.
+- presence of marker genes.
+
+https://eur03.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.bioconductor.org%2Fpackages%2Frelease%2Fbioc%2Fhtml%2FSingleR.html&data=05%7C02%7CJohannes.Rainer%40eurac.edu%7Ca5ef0a729b264253177808deaaa53ee5%7C9251326703e3401a80d4c58ed6674e3b%7C0%7C0%7C639135823868571203%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=%2FLc1d%2FNC41cWamIy46XugMZlqvhQoaW2tKbRscUFDdk%3D&reserved=0
+
+
+## {.center}
+
+::: {.r-fit-text}
+**Thank you for your attention :raised_hands:**
+:::
+
+## References

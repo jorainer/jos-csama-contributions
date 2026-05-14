@@ -1,0 +1,1620 @@
+---
+title: "Metabolomics"
+author: "Johannes Rainer<br><strong>Eurac Research, Institute for
+Biomedicine</strong>, Bolzano, Italy<br>johannes.rainer@eurac.edu<br>github:
+  jorainer<br>mastodon: @jorainer@fediscience.org <br>
+  bluesky: jorainer"
+date: "CSAMA 2026"
+output: 
+  ioslides_presentation:
+    widescreen: false
+    fig_width: 7
+    fig_height: 5
+    fig_retina: 2
+    fig_caption: false
+    transition: faster
+    css: jostyle.css
+---
+
+<style type="text/css">
+
+slides > slide:not(.nobackground):after {
+  content: '';
+}
+
+slides > slide {
+    -webkit-transition:none !important;transition:none !important;
+}
+
+.build > * {
+  -webkit-transition: opacity 0.1s ease-in-out;
+  -webkit-transition-delay: 0.1s;
+  -moz-transition: opacity 0.1s ease-in-out 0.1s;
+  -o-transition: opacity 0.1s ease-in-out 0.1s;
+  transition: opacity 0.1s ease-in-out 0.1s;
+}
+
+.reveal .slides section .slideContent{
+    font-size: 10pt;
+}
+
+</style>
+
+<!--
+Export to pdf:
+webshot function from webshot package.
+Might have to change stuff in the style sheet to make it working.
+library(webshot)
+install_phantomjs()
+fn <- paste0("file://", normalizePath("metabolomics.html"))
+rmdshot("metabolomics.Rmd", "metabolomics.pdf")
+-->
+
+<!--
+Use presenter mode: append ?presentme=true to the URL
+-->
+
+## Content
+
+- Introduction to metabolomics
+- Introduction to (LC-)MS
+- Handling and processing metabolomics data in R
+- Annotation of metabolomics data
+
+## Metabolite? Metabolism?
+
+- [Glycolysis](https://en.wikipedia.org/wiki/Glycolysis)
+
+```{r out.width = "800px", echo = FALSE}
+knitr::include_graphics("images/Glycolysis_01.png")
+```
+
+<div style="font-size: 100%;">
+- Key metabolic pathway common to all cells.
+- Creates energy by converting glucose to pyruvate.
+<div>
+
+<div class="notes">
+So if we go in a bit more depth in the glycolysis pathway... important 
+
+The starting product and the end product of the pathway are important but
+actually what is also very important is all of these analytes generated in
+between. These analytes are what we call metabolites.
+</div>
+
+## Metabolite? Metabolism?
+
+- [Glycolysis](https://en.wikipedia.org/wiki/Glycolysis)
+
+```{r out.width = "800px", echo = FALSE}
+knitr::include_graphics("images/Glycolysis_12.png")
+```
+
+- Metabolites: intermediates and products of cellular processes.
+
+<div class="notes">
+So now i hope you have some kind f image and idea in your mind of what is a 
+metabolic pathway and a metabolite
+</div>
+
+## Metabolite? Metabolism?
+
+- [Glycolysis](https://en.wikipedia.org/wiki/Glycolysis)
+
+```{r out.width = "800px", echo = FALSE}
+knitr::include_graphics("images/Glycolysis_12.png")
+```
+
+- Metabolites: intermediates and products of cellular processes.
+- **Why would we want to measure metabolites?**
+
+<div class="notes">
+So now i hope you have some kind f image and idea in your mind of what is a 
+metabolic pathway and a metabolite
+</div>
+
+
+## Biological molecules
+
+<div style="position:absolute; top:40%;">
+- Gene
+- Transcript
+- Protein
+- Metabolite
+</div>
+
+<div class="notes">
+Relationship to other molecules in biology or health data science.
+</div>
+
+
+## Biological molecules {.notransition}
+
+<div style="position:absolute; top:40%;">
+- Gene
+- Transcript
+- Protein
+- Metabolite
+</div>
+
+<div style="position:absolute; left:25%; top:15%;">
+<img src="images/SLC22A5-001.png" width = 650>
+</div>
+
+<div style="position:absolute; left:45%; top:72%; font-size: 70%">
+SLC22A5
+</div>
+
+<div class="notes">
+- Measure protein
+- where is it expressed (within the organism or cell)
+- abundance
+- can tell us maybe how it's regulated
+- no information on activity or function
+</div>
+
+## Biological molecules {.notransition}
+
+<div style="position:absolute; top:40%;">
+- Gene
+- Transcript
+- **Protein**
+- Metabolite
+</div>
+
+<div style="position:absolute; left:25%; top:15%;">
+<img src="images/SLC22A5-001.png" width = 650>
+</div>
+
+<div style="position:absolute; left:45%; top:72%; font-size: 70%">
+SLC22A5
+</div>
+
+<div style="position:absolute; top:90%">
+Where is it expressed? What's the abundance? What can affect the abundance?
+</div>
+
+<div class="notes">
+- Measure protein
+- where is it expressed (within the organism or cell)
+- abundance
+- can tell us maybe how it's regulated
+- no information on activity or function
+</div>
+
+## Biological molecules {.notransition}
+
+<div style="position:absolute; top:40%;">
+- Gene
+- **Transcript**
+- Protein
+- Metabolite
+</div>
+
+<div style="position:absolute; left:25%; top:15%;">
+<img src="images/SLC22A5-001.png" width = 650>
+</div>
+
+<div style="position:absolute; left:45%; top:72%; font-size: 70%">
+SLC22A5
+</div>
+
+<div style="position:absolute; top:90%">
+Where is it expressed? What's the abundance? What can affect the abundance?
+</div>
+
+<div class="notes">
+- could also measure the transcript.
+</div>
+
+## Biological molecules {.notransition}
+
+<div style="position:absolute; top:40%;">
+- Gene
+- Transcript
+- Protein
+- Metabolite
+</div>
+
+<div style="position:absolute; left:25%; top:15%;">
+<img src="images/SLC22A5-002.png" width = 650>
+</div>
+
+<div style="position:absolute; left:45%; top:72%; font-size: 70%">
+SLC22A5
+</div>
+
+<div style="position:absolute; top:90%">
+SLC22A5 is a transmembrane transporter.
+</div>
+
+<div class="notes">
+- Protein is a membrane transporter, transports small molecules, carnitines
+  through membrane.
+- Provide information on activity and the function of the protein.
+</div>
+
+## Biological molecules {.notransition}
+
+<div style="position:absolute; top:40%;">
+- Gene
+- Transcript
+- Protein
+- **Metabolite**
+</div>
+
+<div style="position:absolute; left:25%; top:15%;">
+<img src="images/SLC22A5-002.png" width = 650>
+</div>
+
+<div style="position:absolute; left:45%; top:72%; font-size: 70%">
+SLC22A5
+</div>
+
+<div style="position:absolute; top:90%">
+Quantify metabolites to study SLC22A5's function and **activity**.
+</div>
+
+<div class="notes">
+- Protein is a membrane transporter, transports small molecules, carnitines
+  through membrane.
+- Provide information on activity and the function of the protein.
+</div>
+
+## Biological molecules {.notransition}
+
+<div style="position:absolute; top:40%;">
+- **Gene**
+- Transcript
+- Protein
+- **Metabolite**
+</div>
+
+<div style="position:absolute; left:25%; top:15%;">
+<img src="images/SLC22A5-003.png" width = 650>
+</div>
+
+<div style="position:absolute; left:45%; top:72%; font-size: 70%">
+SLC22A5
+</div>
+
+<div style="position:absolute; top:90%">
+Activity is influenced by genetic variants
+</div>
+
+## Biological molecules {.notransition}
+
+<div style="position:absolute; top:40%;">
+- **Gene**
+- Transcript
+- Protein
+- **Metabolite**
+</div>
+
+<div style="position:absolute; left:25%; top:15%;">
+<img src="images/SLC22A5-004.png" width = 650>
+</div>
+
+<div style="position:absolute; left:45%; top:72%; font-size: 70%">
+SLC22A5
+</div>
+
+<div style="position:absolute; top:90%">
+Activity is influenced by genetic variants
+</div>
+
+<div style="position:absolute; left:45%; top:97%; font-size: 60%; color: #888888">
+[König et al. Metabolites 2022;12(7):604. doi: 10.3390/metabo12070604.]
+</div>
+
+## Biological molecules {.notransition}
+
+<div style="position:absolute; top:40%;">
+- **Gene**
+- Transcript
+- Protein
+- **Metabolite**
+</div>
+
+<div style="position:absolute; left:25%; top:15%;">
+<img src="images/SLC22A5-004.png" width = 650>
+</div>
+
+<div style="position:absolute; left:45%; top:72%; font-size: 70%">
+SLC22A5
+</div>
+
+<div style="position:absolute; top:90%">
+By quantifying metabolites we can study the effect of genetic variants on
+protein functions.
+</div>
+
+<div style="position:absolute; left:45%; top:97%; font-size: 60%; color: #888888">
+[König et al. Metabolites 2022;12(7):604. doi: 10.3390/metabo12070604.]
+</div>
+
+## Biological molecules {.notransition}
+
+- Relationship between metabolite concentrations and dietary habits.
+
+<div>
+<img src="images/food_items-lm-coefficient-heatmap-1.png" width = 750>
+<div style="position:absolute; left: 40px; top:95%; font-size:70%; color:#808080;">
+</div>
+</div>
+
+<div style="position:absolute; left:45%; top:97%; font-size: 60%; color: #888888">
+[Verri et al. MDPI Metabolites 2022. DOI: 10.3390/metabo12030205]
+</div>
+
+## Biological molecules {.notransition}
+
+- Relationship between metabolite concentrations and dietary habits.
+
+<div>
+<img src="images/food_items-lm-coefficient-heatmap-1.png" width = 750>
+<div style="position:absolute; left: 40px; top:95%; font-size:70%; color:#808080;">
+</div>
+</div>
+
+<div style="position:absolute; top:90%">
+Metabolites provide insights into current metabolic state of an organism.
+</div>
+
+<div style="position:absolute; left:45%; top:97%; font-size: 60%; color: #888888">
+[Verri et al. MDPI Metabolites 2022. DOI: 10.3390/metabo12030205]
+</div>
+
+
+## Metabolome {.build}
+
+### Set of all metabolites in a system at a time
+
+### Properties of the metabolome:
+
+</div>
+<div>
+- Metabolome influenced by **genetic** *and* **environmental factors**.
+- Metabolome is **highly dynamic**.
+</div>
+
+## Metabolomics? {.build}
+
+- Large-scale study of **small molecules** in a system.
+
+<div>
+**What** are we measuring? ... depends on context:
+</div>
+<div>
+  - metabolomics in life sciences: metabolites, lipids, ...
+</div>
+<div>
+  - plant and food metabolomics: metabolites, polyphenoles, ...
+</div>
+<div>
+  - exposomics: chemicals, pharmaceuticals, ...
+</div>
+<div>
+  - environmental sciences: chemicals, metals, ...
+</div>
+
+<div>
+**How** are we measuring these small compounds?
+</div>
+<div>
+- **Nuclear Magnetic Resonance** (NMR): highly specific, not very sensitive.
+- **Mass Spectrometry** (MS): less specific, highly sensitive, high throughput.
+</div>
+
+<div class="notes">
+exposomics: what individuals are exposed to in their life
+</div>
+
+## Metabolomics in life sciences {.build}
+
+**Where** can we measure small compounds/metabolites?
+
+<div>
+- Blood (serum):
+  - insights into general physiological state of organism.
+  - mostly liver, kidney, intestine (~microbiome) metabolism.
+</div>
+<div>
+- Biopsies, tissue slices.
+</div>
+<div>
+- Urine, stool samples, (food, dust): external influence.
+</div>
+<div>
+- Cell culture experiments:
+  - supernatant: what did cells consume/produce?
+  - cell extracts: insights into mitochondrial metabolism.
+
+<div style="position:absolute; left:10%; top:77%;">
+<img src="images/cell-culture-002.png" width = 700/>
+</div>
+</div>
+
+## How can we measure metabolites? {.build}
+
+### Properties of metabolites:
+
+<div>
+- Metabolites are small, electrically uncharged molecules.
+</div>
+
+
+## How can we measure metabolites?
+
+### Properties of metabolites:
+
+- Metabolites are **small**, electrically uncharged molecules.
+
+- Can be detected using Mass Spectrometry without e.g. digesting or cleaving
+  them.
+
+## How can we measure metabolites?
+
+### Properties of metabolites:
+
+- Metabolites are small, **electrically uncharged** molecules.
+
+- Can be detected using Mass Spectrometry without e.g. digesting or cleaving
+  them.
+
+- Need to create ions to allow measurement by Mass Spectrometry.
+
+
+## How can we measure metabolites?
+
+### Properties of metabolites:
+
+- Metabolites are small, electrically uncharged molecules.
+
+- Can be detected using Mass Spectrometry without e.g. digesting or cleaving
+  them.
+
+- Need to create ions to allow measurement by Mass Spectrometry.
+
+### Two main setups to measure metabolites:
+
+
+## How can we measure metabolites?
+
+### Properties of metabolites:
+
+- Metabolites are small, electrically uncharged molecules.
+
+- Can be detected using Mass Spectrometry without e.g. digesting or cleaving
+  them.
+
+- Need to create ions to allow measurement by Mass Spectrometry.
+
+### Two main setups to measure metabolites:
+
+- **targeted metabolomics**: quantitative measurement of selected metabolites.
+
+
+## How can we measure metabolites?
+
+### Properties of metabolites:
+
+- Metabolites are small, electrically uncharged molecules.
+
+- Can be detected using Mass Spectrometry without e.g. digesting or cleaving
+  them.
+
+- Need to create ions to allow measurement by Mass Spectrometry.
+
+### Two main setups to measure metabolites:
+
+- **targeted metabolomics**: quantitative measurement of selected metabolites.
+
+- **untargeted metabolomics**: semi-quantitative measurement of all metabolites
+  (detectable with the setup) in a sample.
+
+<div class="notes"> Targeted mass spectrometry is designed to detect and
+quantify specific, predefined compounds. In this approach, we focus on
+monitoring selected ions that correspond to known compounds. This method
+provides high sensitivity and specificity, making it ideal for applications such
+as clinical diagnostics, pharmacokinetics, and biomarker validation.
+
+On the other hand, untargeted mass spectrometry aims to profile all detectable
+compounds within a sample without prior knowledge of their identity. This
+comprehensive approach allows for the discovery of new compounds and the
+generation of broad metabolic profiles. It is especially useful in exploratory
+studies, where the goal is to understand complex biological or chemical systems.
+</div>
+
+
+## Mass Spectrometry (MS)
+
+<div style="position:absolute; top:28%; left:7%; width:400px">
+```{r out.width = "400px", echo = FALSE}
+knitr::include_graphics("images/MS_ionization_mod.png")
+```
+</div>
+
+<div class="notes">
+- ionization needed.
+- ions are detected and measured in MS instrument... different instruments
+  exist.
+
+</div>
+
+
+## Mass Spectrometry (MS)
+
+<div style="position:absolute; top:28%; left:7%; width:400px">
+```{r out.width = "400px", echo = FALSE}
+knitr::include_graphics("images/MS_ionization_mod.png")
+```
+</div>
+<div style="position:absolute; top:20%; left:53%; width:300px">
+```{r out.width = "300px", echo = FALSE}
+knitr::include_graphics("images/Spectrum1_mod.png")
+```
+</div>
+
+<div style="position:absolute; top:14%; left:60%;">
+mass spectrum
+</div>
+
+<div class="notes">
+- mass spectrum: mass peaks.
+- each mass peak: signal from ions of a certain mass-to-charge ratio.
+- intensity is proportional with the abundance.
+</div>
+
+## Mass Spectrometry (MS)
+
+<div style="position:absolute; top:28%; left:7%; width:400px">
+```{r out.width = "400px", echo = FALSE}
+knitr::include_graphics("images/MS_ionization_mod.png")
+```
+</div>
+<div style="position:absolute; top:13%; left:49%; width:430px">
+```{r out.width = "430px", echo = FALSE}
+knitr::include_graphics("images/TPC.png")
+```
+</div>
+
+## Mass Spectrometry (MS)
+
+<div style="position:absolute; top:28%; left:7%; width:400px">
+```{r out.width = "400px", echo = FALSE}
+knitr::include_graphics("images/MS_ionization_mod.png")
+```
+</div>
+<div style="position:absolute; top:13%; left:49%; width:430px">
+```{r out.width = "430px", echo = FALSE}
+knitr::include_graphics("images/TPC-sel.png")
+```
+</div>
+
+## Mass Spectrometry (MS)
+
+<div style="position:absolute; top:28%; left:7%; width:400px">
+```{r out.width = "400px", echo = FALSE}
+knitr::include_graphics("images/MS_ionization_mod.png")
+```
+</div>
+<div style="position:absolute; top:13%; left:49%; width:430px">
+```{r out.width = "430px", echo = FALSE}
+knitr::include_graphics("images/TPC-sel.png")
+```
+</div>
+
+<div style="position:absolute; top:57%; left:10%;">
+[C6H12O6**+Na**]+
+</div>
+
+## Mass Spectrometry (MS)
+
+<div style="position:absolute; top:28%; left:7%; width:400px">
+```{r out.width = "400px", echo = FALSE}
+knitr::include_graphics("images/MS_ionization_mod.png")
+```
+</div>
+<div style="position:absolute; top:13%; left:49%; width:430px">
+```{r out.width = "430px", echo = FALSE}
+knitr::include_graphics("images/TPC-sel.png")
+```
+</div>
+
+<div style="position:absolute; top:57%; left:10%;">
+[C6H12O6+Na]+ **Glucose**
+</div>
+
+## Mass Spectrometry (MS)
+
+<div style="position:absolute; top:28%; left:7%; width:400px">
+```{r out.width = "400px", echo = FALSE}
+knitr::include_graphics("images/MS_ionization_mod.png")
+```
+</div>
+<div style="position:absolute; top:13%; left:49%; width:430px">
+```{r out.width = "430px", echo = FALSE}
+knitr::include_graphics("images/TPC-sel.png")
+```
+</div>
+
+<div style="position:absolute; top:57%; left:10%;">
+[C6H12O6+Na]+ **Glucose**
+</div>
+<div style="position:absolute; top:63%; left:10%;">
+[C6H12O6+Na]+ **Fructose**
+</div>
+<div style="position:absolute; top:69%; left:10%;">
+[C6H12O6+Na]+ **Mannose**
+</div>
+
+<div style="position:absolute; top:80%;left:7%">
+> - **Problem:** unable to distinguish between metabolites with the same/similar 
+    mass-to-charge ratio (*m/z*).
+> - **Solution:** additional separation of metabolites prior to MS.
+</div>
+
+
+## Mass Spectrometry (MS)
+
+<div style="position:absolute; top:28%; left:7%; width:400px">
+```{r out.width = "400px", echo = FALSE}
+knitr::include_graphics("images/MS_ionization_mod.png")
+```
+</div>
+<div style="position:absolute; top:13%; left:49%; width:430px">
+```{r out.width = "430px", echo = FALSE}
+knitr::include_graphics("images/TPC-sel.png")
+```
+</div>
+
+<div style="position:absolute; top:57%; left:10%;">
+C6H12O6 **Glucose**
+</div>
+<div style="position:absolute; top:54%; left:35%;">
+```{r out.width = "80px", echo = FALSE}
+knitr::include_graphics("images/hmdb-glucose.png")
+```
+</div>
+<div style="position:absolute; top:63%; left:10%;">
+C6H12O6 **Fructose**
+</div>
+<div style="position:absolute; top:60%; left:35%;">
+```{r out.width = "80px", echo = FALSE}
+knitr::include_graphics("images/hmdb-fructose.png")
+```
+</div>
+<div style="position:absolute; top:69%; left:10%;">
+C6H12O6 **Mannose**
+</div>
+<div style="position:absolute; top:66%; left:35%;">
+```{r out.width = "80px", echo = FALSE}
+knitr::include_graphics("images/hmdb-mannose.png")
+```
+</div>
+
+<div style="position:absolute; top:80%;left:7%">
+- **Problem:** unable to distinguish between metabolites with the same/similar 
+    mass-to-charge ratio (*m/z*).
+- **Solution:** additional separation of metabolites prior to MS.
+</div>
+
+
+
+## Liquid Chromatography {.build}
+
+<div>
+- Sample is dissolved in a fluid (mobile phase).
+
+<div style="position:absolute; top:60%;left:25%">
+```{r out.width = "500px", echo = FALSE}
+knitr::include_graphics("images/LC_01.png")
+```
+</div>
+</div>
+
+## Liquid Chromatography
+
+- Sample is dissolved in a fluid (mobile phase).
+
+- Mobile phase carries analytes through column (stationary phase).
+
+<div style="position:absolute; top:60%;left:25%">
+```{r out.width = "500px", echo = FALSE}
+knitr::include_graphics("images/LC_02.png")
+```
+</div>
+
+
+## Liquid Chromatography
+
+- Sample is dissolved in a fluid (mobile phase).
+
+- Mobile phase carries analytes through column (stationary phase).
+
+- Separation based on affinity for the column's stationary phase.
+
+<div style="position:absolute; top:60%;left:25%">
+```{r out.width = "500px", echo = FALSE}
+knitr::include_graphics("images/LC_03.png")
+```
+</div>
+
+
+## Liquid Chromatography
+
+- Sample is dissolved in a fluid (mobile phase).
+
+- Mobile phase carries analytes through column (stationary phase).
+
+- Separation based on affinity for the column's stationary phase.
+
+- Commonly used:
+  [RPLC](https://en.wikipedia.org/wiki/Reversed-phase_chromatography) (Reversed
+  Phase LC).
+  [HILIC](https://en.wikipedia.org/wiki/Hydrophilic_interaction_chromatography)
+  (hyrophilic liquid interaction chromatography)
+
+<div style="position:absolute; top:60%;left:25%">
+```{r out.width = "500px", echo = FALSE}
+knitr::include_graphics("images/LC_03.png")
+```
+</div>
+
+
+<!-- Now comes the incremental LC-MS description -->
+## | **Mass Spectrometry (MS)** {.notransition}
+
+```{r out.width = "700px", echo = FALSE}
+knitr::include_graphics("images/MS_Spectrum1.png")
+```
+
+## | **Liquid Chromatography Mass Spectrometry (LC-MS)** {.notransition}
+
+```{r out.width = "700px", echo = FALSE}
+knitr::include_graphics("images/LCMS_Spectrum1.png")
+```
+
+<div style="position:absolute; left:50%; top:55%">
+We gain an additional dimension:
+
+- retention time.
+</div>
+
+## | **Liquid Chromatography Mass Spectrometry (LC-MS)** {.notransition}
+
+```{r out.width = "700px", echo = FALSE}
+knitr::include_graphics("images/LCMS_Spectrum2.png")
+```
+
+<div style="position:absolute; left:50%; top:55%">
+We gain an additional dimension:
+
+- retention time.
+</div>
+
+## | **Liquid Chromatography Mass Spectrometry (LC-MS)** {.notransition}
+
+```{r out.width = "700px", echo = FALSE}
+knitr::include_graphics("images/LCMS_Spectrum3.png")
+```
+
+<div style="position:absolute; left:50%; top:55%">
+We gain an additional dimension:
+
+- retention time.
+</div>
+
+## | **Liquid Chromatography Mass Spectrometry (LC-MS)** {.notransition}
+
+```{r out.width = "700px", echo = FALSE}
+knitr::include_graphics("images/LCMS_Spectrum4.png")
+```
+
+<div style="position:absolute; left:50%; top:55%">
+We gain an additional dimension:
+
+- retention time.
+</div>
+
+## | **Liquid Chromatography Mass Spectrometry (LC-MS)** {.notransition}
+
+```{r out.width = "700px", echo = FALSE}
+knitr::include_graphics("images/LCMS_Spectrum5.png")
+```
+
+<div style="position:absolute; left:50%; top:55%">
+We gain an additional dimension:
+
+- retention time.
+</div>
+
+## | **Liquid Chromatography Mass Spectrometry (LC-MS)** {.notransition}
+
+```{r out.width = "700px", echo = FALSE}
+knitr::include_graphics("images/LCMS_Spectrum6.png")
+```
+
+<div style="position:absolute; left:50%; top:55%">
+We gain an additional dimension:
+
+- retention time.
+</div>
+
+## | **Liquid Chromatography Mass Spectrometry (LC-MS)** {.notransition}
+
+```{r out.width = "700px", echo = FALSE}
+knitr::include_graphics("images/LCMS_Spectrum6.png")
+```
+
+<div style="position:absolute; left:50%; top:55%">
+We gain an additional dimension:
+
+- retention time.
+</div>
+<div style="position:absolute; left:50%; top:70%">
+- LC-MS: analyze data along retention time.
+</div>
+
+## | **Liquid Chromatography Mass Spectrometry (LC-MS)** {.notransition}
+
+<div>
+<img src="images/LC-MS-drawing.gif" width = 900>
+</div>
+
+
+## | **Liquid Chromatography Mass Spectrometry (LC-MS)** {.notransition}
+
+Signal measured along retention time (150-175 seconds).
+
+<div>
+<img src="images/LC-MS-Glucose.gif" width = 600>
+</div>
+
+
+## | **Liquid Chromatography Mass Spectrometry (LC-MS)** {.notransition}
+
+Signal along rt (chromatogram) of an [M+Na]+ ion of *C6H12O6*.
+
+<div>
+<img src="images/LC-MS-glucose.png" width = 600>
+</div>
+
+
+## Spatial metabolomics {.build}
+
+- DESI (Desorption electrospray ionization)-MS
+
+<div style="position:absolute; left:10%; top: 27%">
+<img src="images/DESI-principle.jpg" width = 600>
+</div>
+
+<div>
+<div style="position:absolute; left:10%; top: 45%">
+<img src="images/DESI-scan.png" width = 700>
+</div>
+<div style="position:absolute; left:45%; top:97%; font-size: 60%; color: #888888">
+[Eberlin L.S. Methods Mol Biol. 2014. DOI: 10.1007/978-1-4939-1258-2_20]
+</div>
+</div>
+
+## Mass spectrometry data analysis in *R* {.build}
+
+<div>
+<div style="position:absolute; left:5%; top:35%;">
+<img src="images/bioconductor_logo_rgb.png" width = 450>
+</div>
+<div style="position:absolute; left:60%; top:35%;">
+<img src="images/R4MassSpec-logo.png" width = 300>
+</div>
+</div>
+
+## Mass spectrometry data analysis in *R*
+
+<!-- width 1790 -->
+
+<div>
+<img src="images/R4MS-ecosystem.png" width = 500>
+</div>
+<div style="position:absolute; left:60%; top:35%;">
+<img src="images/R4MassSpec-logo.png" width = 300>
+</div>
+<div style="position:absolute; left:60%; top:60%;">
+Ecosystem of R packages covering different parts of MS data analysis.
+</div>
+
+
+## Mass spectrometry data analysis in *R*
+
+<!-- width 1790 -->
+
+<div>
+<img src="images/R4MS-Spectra.png" width = 500>
+</div>
+<div style="position:absolute; left:55%; top:35%;">
+- Infrastructure to handle MS data
+</div>
+
+## Mass spectrometry data analysis in *R*
+
+<!-- width 1983 -->
+
+<div>
+<img src="images/R4MS-Spectra-extension.png" width = 500>
+</div>
+<div style="position:absolute; left:55%; top:35%;">
+- Infrastructure to handle MS data
+- Packages that *expand* *Spectra*
+  - support for file types/formats
+  - alternative *data representations*
+</div>
+
+## Metabolomics data analysis in *R*
+
+<!-- width  -->
+
+<div>
+<img src="images/R4MS-xcms.png" width = 500>
+</div>
+<div style="position:absolute; left:55%; top:35%;">
+- Preprocessing of LC-MS data.
+</div>
+
+## Metabolomics data analysis in *R*
+
+<!-- width 1915 -->
+
+<div>
+<img src="images/R4MS-Annotation.png" width = 500>
+</div>
+<div style="position:absolute; left:55%; top:35%;">
+- Annotation of metabolomics data/results.
+</div>
+
+## Metabolomics data analysis in *R*
+
+<!-- width 1891 -->
+
+<div>
+<img src="images/R4MS-interoperability.png" width = 500>
+</div>
+<div style="position:absolute; left:55%; top:35%;">
+- Integration with external software.
+</div>
+
+## Metabolomics data analysis in *R*
+
+<!-- width 1891 -->
+
+<div>
+<img src="images/R4MS-interoperability.png" width = 500>
+</div>
+<div style="position:absolute; left:55%; top:35%;">
+- Integration with external software.
+</div>
+
+<div style="position:absolute; left: 60%; top:50%">
+<img src="images/Python-logo-notext.svg.png" width = 50>
+</div>
+<div style="position:absolute; left: 65%; top:50%">
+<img src="images/matchms_header.png" width = 200>
+</div>
+<div style="position:absolute; left: 75%; top:50%">
+<img src="images/ms2deepscore_logo.png" width = 200>
+</div>
+
+<div style="position:absolute; left: 60%; top:65%">
+<img src="images/mzmine3.png" width = 200>
+</div>
+
+<div style="position:absolute; left: 85%; top:70%">
+<img src="images/iconMsdial.png" width = 80>
+</div>
+
+<div style="position:absolute; left: 65%; top:80%">
+<img src="images/Sirius.png" width = 200>
+</div>
+
+
+## An end-to-end metabolomics data analysis workflow {.build}
+
+<div style="position:absolute; left:25%; top:12%;">
+<img src="images/workflowV2.png" width = 450>
+<div>
+
+## MS data import{.build}
+
+```{r, echo = FALSE, message = FALSE}
+## Run preprocessing on one file
+library(MsExperiment)
+library(xcms)
+fl <- system.file("mzML", "HighIS_Mix07_CE20_POS.mzML",
+                  package = "MetaboAnnotationTutorials")
+std_data <- readMsExperiment(fl)
+cwp <- CentWaveParam(snthresh = 5, prefilter = c(3, 300), ppm = 40,
+                     peakwidth = c(2, 8), integrate = 2)
+std_data <- findChromPeaks(std_data, param = cwp)
+std_data <- refineChromPeaks(std_data, MergeNeighboringPeaksParam(expandRt = 3))
+```
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-data.png" width = 100>
+</div>
+
+<div>
+- Data stored in *mzML* files (or *mzXML*, *netCDF* format).
+</div>
+<div>
+
+<div style="position:absolute; left:7%; top:313px;">
+<img src="images/Spectra-rainbow.png" width=140>
+</div>
+<div style="position:absolute; left:23%; top:380px;">
+`sps <- Spectra(fl, source = MsBackendMzR())`
+</div>
+</div>
+
+## MS data import
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-data.png" width = 100>
+</div>
+
+<div>
+- Data stored in *mzML* files (or *mzXML*, *netCDF* format).
+</div>
+<div>
+- Load MS and sample information.
+</div>
+
+<div>
+<div style="position:absolute; left:7%; top:313px;">
+<img src="images/Spectra-rainbow.png" width=140>
+</div>
+<div style="position:absolute; left:23%; top:380px;">
+`sps <- Spectra(fl, source = MsBackendMzR())`
+</div>
+</div>
+<div>
+<div style="position:absolute; left:7%; top:490px;">
+<img src="images/MsExperiment.png" width=140>
+</div>
+<div style="position:absolute; left:23%; top:555px;">
+`ms <- readMsExperiment(fl, sampleData = pd)`
+</div>
+</div>
+
+## LC-MS data analysis
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-preprocessing.png" width = 100>
+</div>
+
+<div>
+- Untargeted metabolomics (label-free proteomics).
+
+## LC-MS data analysis {.notransition}
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-preprocessing.png" width = 100>
+</div>
+
+<div>
+- Untargeted metabolomics (label-free proteomics).
+
+<div>
+<div style="position:absolute; left:45px; top:306px;">
+<img src="images/Spectra-rainbow.png" width=140>
+</div>
+<div style="position:absolute; left:114px; top:185px;">
+<img src="images/MsExperiment.png" width=140>
+</div>
+<div style="position:absolute; left:254px; top:185px;">
+<img src="images/xcms.png" width=140>
+</div>
+</div>
+<div style="position:absolute; left:45%; top:250px;">
+- LC-MS preprocessing:
+</div>
+
+## LC-MS data analysis {.notransition}
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-preprocessing.png" width = 100>
+</div>
+
+- Untargeted metabolomics (label-free proteomics).
+
+<div style="position:absolute; left:45px; top:306px;">
+<img src="images/Spectra-rainbow.png" width=140>
+</div>
+<div style="position:absolute; left:114px; top:185px;">
+<img src="images/MsExperiment.png" width=140>
+</div>
+<div style="position:absolute; left:254px; top:185px;">
+<img src="images/xcms.png" width=140>
+</div>
+
+<div style="position:absolute; left:45%; top:250px;">
+- LC-MS preprocessing:
+  - chromatographic peak detection
+</div>
+
+<div style="position:absolute; left:23%; top:375px;">
+`findChromPeaks`
+</div>
+
+<div style="position:absolute; left:20%; top:55%">
+<img src="images/LCMS-data-peaks.png" height = 300>
+</div>
+
+## LC-MS data analysis {.notransition}
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-preprocessing.png" width = 100>
+</div>
+
+- Untargeted metabolomics (label-free proteomics).
+
+<div style="position:absolute; left:45px; top:306px;">
+<img src="images/Spectra-rainbow.png" width=140>
+</div>
+<div style="position:absolute; left:114px; top:185px;">
+<img src="images/MsExperiment.png" width=140>
+</div>
+<div style="position:absolute; left:254px; top:185px;">
+<img src="images/xcms.png" width=140>
+</div>
+
+<div style="position:absolute; left:45%; top:250px;">
+- LC-MS preprocessing:
+  - chromatographic peak detection
+  - retention time alignment
+</div>
+
+<div style="position:absolute; left:23%; top:375px;">
+`adjustRtime`
+</div>
+
+<div style="position:absolute; left:20%; top:55%">
+<img src="images/alignment.png" height = 300>
+</div>
+
+## LC-MS data analysis {.notransition}
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-preprocessing.png" width = 100>
+</div>
+
+- Untargeted metabolomics (label-free proteomics).
+
+<div style="position:absolute; left:45px; top:306px;">
+<img src="images/Spectra-rainbow.png" width=140>
+</div>
+<div style="position:absolute; left:114px; top:185px;">
+<img src="images/MsExperiment.png" width=140>
+</div>
+<div style="position:absolute; left:254px; top:185px;">
+<img src="images/xcms.png" width=140>
+</div>
+
+<div style="position:absolute; left:45%; top:250px;">
+- LC-MS preprocessing:
+  - chromatographic peak detection
+  - retention time alignment
+  - correspondence
+</div>
+
+<div style="position:absolute; left:20%; top:55%">
+<img src="images/correspondence2_03.png" height = 300>
+</div>
+
+<div style="position:absolute; left:23%; top:375px;">
+`groupChromPeaks`
+</div>
+
+
+## LC-MS data analysis {.notransition}
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-preprocessing.png" width = 100>
+</div>
+
+- Untargeted metabolomics (label-free proteomics).
+
+<div style="position:absolute; left:45px; top:306px;">
+<img src="images/Spectra-rainbow.png" width=140>
+</div>
+<div style="position:absolute; left:114px; top:185px;">
+<img src="images/MsExperiment.png" width=140>
+</div>
+<div style="position:absolute; left:254px; top:185px;">
+<img src="images/xcms.png" width=140>
+</div>
+
+<div style="position:absolute; left:45%; top:250px;">
+- LC-MS preprocessing:
+  - chromatographic peak detection
+  - retention time alignment
+  - correspondence
+</div>
+
+<div style="position:absolute; left:23%; top:375px;">
+`featureValues`
+</div>
+
+<div style="position:absolute; left:15%; top:60%; font-size:50%;">
+```{r, echo = FALSE, message = FALSE}
+npks <- nrow(chromPeaks(std_data))
+library(S4Vectors)
+fts <- DataFrame(
+    mz = chromPeaks(std_data)[, "mz"],
+    rt = chromPeaks(std_data)[, "rt"],
+    sample_1 = chromPeaks(std_data)[, "into"],
+    sample_2 = abs(chromPeaks(std_data)[, "into"] + rnorm(npks, 70, 70)),
+    sample_3 = abs(chromPeaks(std_data)[, "into"] + rnorm(npks, 40, 70)),
+    sample_4 = abs(chromPeaks(std_data)[, "into"] + rnorm(npks, 90, 70)))
+rownames(fts) <- sub("CP", "FT", rownames(fts))
+fts
+```
+</div>
+
+
+## LC-MS data analysis
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-analysis.png" width = 100>
+</div>
+
+<div style="position:absolute; top:250px;">
+- Data exploration
+- Data normalization
+- Differential abundance analysis
+- ...
+</div>
+
+<div style="position:absolute; left:15%; top:60%; font-size:50%;">
+```{r, echo = FALSE, message = FALSE}
+fts
+```
+</div>
+
+## But wait - what are we actually measuring?
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-00.png" width = 100>
+</div>
+
+<div style="position:absolute; left:15%; top:60%; font-size:50%;">
+```{r, echo = FALSE, message = FALSE}
+fts
+```
+</div>
+
+## But wait - what are we actually measuring?
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-00.png" width = 100>
+</div>
+
+- *LC-MS features* characterized by their *m/z* and retention time.
+- **Goal**: *annotate* these features to metabolites (compounds).
+
+<div style="position:absolute; left:15%; top:60%; font-size:50%;">
+```{r, echo = FALSE, message = FALSE}
+fts
+```
+</div>
+
+## One step back: ionization
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-00.png" width = 100>
+</div>
+
+```{r, echo = FALSE, results = "asis"}
+library(MetaboCoreUtils)
+library(pander)
+cmps <- data.frame(name = c("Caffeine", "Enprofylline"),
+                   formula = c("C8H10N4O2", "C8H10N4O2"))
+cmps$exactmass <- calculateMass(cmps$formula)
+
+cmps <- cbind(cmps, mass2mz(cmps$exactmass, adduct = c("[M+H]+", "[M+Na]+")))
+
+pandoc.table(cmps[1, 1:3], style = "rmarkdown")
+```
+
+<div style="position:absolute; left:5%; top:40%">
+- Molecule not charged. Can not be detected with MS.
+</div>
+
+## One step back: ionization
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-00.png" width = 100>
+</div>
+
+```{r, echo = FALSE, results = "asis"}
+pandoc.table(cmps[1, 1:4], style = "rmarkdown")
+```
+
+<div style="position:absolute; left:5%; top:40%">
+- Molecule not charged. Can not be detected with MS.
+- Electrospray ionization: create ions
+</div>
+
+## One step back: ionization {.notransition}
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-00.png" width = 100>
+</div>
+
+```{r, echo = FALSE, results = "asis"}
+pandoc.table(cmps[1, ], style = "rmarkdown")
+```
+
+<div style="position:absolute; left:5%; top:40%">
+- Molecule not charged. Can not be detected with MS.
+- Electrospray ionization: create ions, potentially multiple.
+</div>
+
+## Annotation using *m/z* values {.notransition}
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-annotation.png" width = 100>
+</div>
+
+```{r, echo = FALSE, results = "asis"}
+pandoc.table(cmps[1, ], style = "rmarkdown")
+```
+
+<div style="position:absolute; left:5%; top:40%">
+- Molecule not charged. Can not be detected with MS.
+- Electrospray ionization: create ions, potentially multiple.
+- Match measured *m/z* against these reference values.
+</div>
+
+<div style="position:absolute; left:50px; top:450px;">
+<img src="images/MetaboAnnotation.png" width=140>
+</div>
+<div style="position:absolute; left:25%; top:492px;">
+```{r, eval = FALSE}
+mtch <- matchValues(query, target,
+                    Mass2MzParam(c("[M+H]+", "[M+Na]+")))
+```
+</div>
+
+## Annotation using *m/z* values {.notransition}
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-annotation.png" width = 100>
+</div>
+
+```{r, echo = FALSE, results = "asis"}
+pandoc.table(cmps[1, ], style = "rmarkdown")
+```
+
+<div style="position:absolute; left:5%; top:40%">
+- Molecule not charged. Can not be detected with MS.
+- Electrospray ionization: create ions, potentially multiple.
+- Match measured *m/z* against these reference values.
+</div>
+
+<div style="position:absolute; left:50px; top:450px;">
+<img src="images/MetaboAnnotation.png" width=140>
+</div>
+<div style="position:absolute; left:25%; top:492px;">
+```{r, eval = FALSE}
+mtch <- matchValues(query, target,
+                    Mass2MzParam(c("[M+H]+", "[M+Na]+")))
+```
+</div>
+
+<div style="position:absolute; left:5%; top:84%;">
+- `query`: experimental *m/z* values.
+- `target`: reference masses (e.g. from *HMDB*, *ChEBI*, *PubChem*, ...).
+</div>
+
+## A little additional complication
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-annotation.png" width = 100>
+</div>
+
+<div>
+```{r, echo = FALSE, results = "asis"}
+pandoc.table(cmps, style = "rmarkdown")
+```
+</div>
+<div style="position:absolute; left:5%; top:50%">
+- Enprofylline: asthma treatment agent.
+- Compounds can have same formula - how to distinguish?
+</div>
+
+
+## A little additional complication {.notransition}
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-annotation.png" width = 100>
+</div>
+
+```{r, echo = FALSE, results = "asis"}
+pandoc.table(cmps, style = "rmarkdown")
+```
+<div style="position:absolute; left:5%; top:50%">
+- Enprofylline: asthma treatment agent.
+- Compounds can have same formula - how to distinguish?
+- They differ by their structure.
+</div>
+
+<div style="position:absolute; left:150px; top:550px">
+<img src="images/caffeine.png" width = 150/>
+</div>
+
+<div style="position:absolute; left:500px; top:550px">
+<img src="images/enprofylline.png" width = 150/>
+</div>
+
+
+## Annotation using *m/z* **and** retention time
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-annotation.png" width = 100>
+</div>
+
+- Structure can have an influence on the polarity of compounds and thus they
+  will separate in the LC: -> different retention time.
+- Annotation using *m/z* and retention time:
+
+## Annotation using *m/z* **and** retention time
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-annotation.png" width = 100>
+</div>
+
+- Structure can have an influence on the polarity of compounds and thus they
+  will separate in the LC: -> different retention time.
+- Annotation using *m/z* and retention time:
+
+<div>
+<div style="position:absolute; left:50px; top:400px;">
+<img src="images/MetaboAnnotation.png" width=140>
+</div>
+<div style="position:absolute; left:25%; top:443px;">
+```{r, eval = FALSE}
+mtch <- matchValues(query, target,
+                    Mass2MzRtParam(c("[M+H]+", "[M+Na]+")))
+```
+</div>
+</div>
+
+- Requires that we do have **reference** retention times available.
+- These are instrument set-up/lab-specific.
+
+## Annotation using MS2 spectra
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-annotation.png" width = 100>
+</div>
+
+<div>
+- We can *fragment* ions to get some information on their structure.
+</div>
+<div>
+<img src="images/MSMS.png" width = 800>
+</div>
+
+## Annotation using MS2 spectra
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-annotation.png" width = 100>
+</div>
+
+<div>
+- We can *fragment* ions to get some information on their structure.
+</div>
+
+<div>
+<img src="images/fragment-spectra.png" width = 800>
+</div>
+
+<div>
+- LC-MS/MS data: MS1 for quantification, MS2 for annotation.
+</div>
+
+## Annotation using MS2 spectra
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-annotation.png" width = 100>
+</div>
+
+- If we have MS2 spectra associated to features, we can match them against
+  *reference* spectra.
+
+## Annotation using MS2 spectra
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-annotation.png" width = 100>
+</div>
+
+- If we have MS2 spectra associated to features, we can match them against
+  *reference* spectra.
+- Calculate spectral similarity between query and reference.
+
+## Annotation using MS2 spectra
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-annotation.png" width = 100>
+</div>
+
+- If we have MS2 spectra associated to features, we can match them against
+  *reference* spectra.
+- Calculate spectral similarity between query and reference.
+
+<div style="float:left;">
+<img src="images/massbank-mirror-plot-1.png" width = 400>
+</div>
+<div style="float:left;">
+<img src="images/massbank-mirror-plot-low-1.png" width = 400>
+</div>
+
+
+## Spectra similarity calculation in *R*
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-annotation.png" width = 100>
+</div>
+
+<div>
+<div style="position:absolute; left:50px; top:120px;">
+<img src="images/Spectra-rainbow.png" width=140>
+</div>
+<div style="position:absolute; left:25%; top:178px;">
+```{r, eval = FALSE}
+simmat <- compareSpectra(a, b)
+```
+</div>
+</div>
+
+<div>
+<div style="position:absolute; left:50px; top:290px;">
+<img src="images/MetaboAnnotation.png" width=140>
+</div>
+<div style="position:absolute; left:25%; top:333px;">
+```{r, eval = FALSE}
+mtch <- matchSpectra(query, target,
+                     CompareSpectraParam())
+```
+</div>
+</div>
+
+<div style="position:absolute; left:50px; top:480px;">
+[*SpectriPy*](https://github.com/RforMassSpectrometry/SpectriPy): integrate
+python MS libraries (*matchms*, *MS2DeepScore*) into *Spectra*-based workflows.
+</div>
+
+<div style="position:absolute; left:50px; top:580px;">
+- **Limitation**: availability of reference spectra.
+- Public reference databases are growing, collecting data shared by researchers.
+</div>
+
+
+## Workshops {.build}
+
+<div>
+https://RforMassSpectrometry.github.io/Metabonaut
+<img src="images/metabonaut-home.png" width=500>
+</div>
+
+<div style="position:absolute; left:57%; top:30%;">
+- end-to-end workflow
+- smaller tutorials
+- docker image for interactive usage
+</div>
+
+## {.build}
+
+<div style="position:absolute; top:48%; left:33%;">
+**Thank you for your attention**
+</div>
