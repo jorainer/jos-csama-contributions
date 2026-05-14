@@ -4,7 +4,7 @@ author: "Johannes Rainer<br><strong>Eurac Research, Institute for
 Biomedicine</strong>, Bolzano, Italy<br>johannes.rainer@eurac.edu<br>github:
   jorainer<br>mastodon: @jorainer@fediscience.org <br>
   bluesky: jorainer"
-date: "CSAMA 2026"
+date: "**CSAMA 2026**"
 output: 
   ioslides_presentation:
     widescreen: false
@@ -57,9 +57,9 @@ Use presenter mode: append ?presentme=true to the URL
 ## Content
 
 - Introduction to metabolomics
-- Introduction to (LC-)MS
+- Introduction to mass spectrometry data
 - Handling and processing metabolomics data in R
-- Annotation of metabolomics data
+- Annotating metabolomics data
 
 ## Metabolite? Metabolism?
 
@@ -324,9 +324,9 @@ Activity is influenced by genetic variants
 SLC22A5
 </div>
 
-<div style="position:absolute; top:90%">
-By quantifying metabolites we can study the effect of genetic variants on
-protein functions.
+<div style="position:absolute; top:90%"> 
+ℹ️ by quantifying metabolites we can study the **effect** of genetic variants 
+on protein functions.
 </div>
 
 <div style="position:absolute; left:45%; top:97%; font-size: 60%; color: #888888">
@@ -349,7 +349,8 @@ protein functions.
 
 ## Biological molecules {.notransition}
 
-- Relationship between metabolite concentrations and dietary habits.
+- Metabolite abundances are also influenced by external factors.
+- Relationship between metabolite concentrations and dietary habits:
 
 <div>
 <img src="images/food_items-lm-coefficient-heatmap-1.png" width = 750>
@@ -358,11 +359,11 @@ protein functions.
 </div>
 
 <div style="position:absolute; top:90%">
-Metabolites provide insights into current metabolic state of an organism.
+👉 metabolites provide insights into current metabolic state of an organism.
 </div>
 
 <div style="position:absolute; left:45%; top:97%; font-size: 60%; color: #888888">
-[Verri et al. MDPI Metabolites 2022. DOI: 10.3390/metabo12030205]
+[Verri et al. Metabolites 2022. DOI: 10.3390/metabo12030205]
 </div>
 
 
@@ -623,7 +624,7 @@ knitr::include_graphics("images/TPC-sel.png")
 </div>
 
 <div style="position:absolute; top:57%; left:10%;">
-[C6H12O6+Na]+ **Glucose**
+[C6H12O6+Na]+ : **Glucose**
 </div>
 
 ## Mass Spectrometry (MS)
@@ -640,13 +641,13 @@ knitr::include_graphics("images/TPC-sel.png")
 </div>
 
 <div style="position:absolute; top:57%; left:10%;">
-[C6H12O6+Na]+ **Glucose**
+[C6H12O6+Na]+ : **Glucose**
 </div>
 <div style="position:absolute; top:63%; left:10%;">
-[C6H12O6+Na]+ **Fructose**
+[C6H12O6+Na]+ : **Fructose**
 </div>
 <div style="position:absolute; top:69%; left:10%;">
-[C6H12O6+Na]+ **Mannose**
+[C6H12O6+Na]+ : **Mannose**
 </div>
 
 <div style="position:absolute; top:80%;left:7%">
@@ -1464,7 +1465,7 @@ pandoc.table(cmps, style = "rmarkdown")
 </div>
 
 - Structure can have an influence on the polarity of compounds and thus they
-  will separate in the LC: -> different retention time.
+  will separate in the LC: 👉 different retention time.
 - Annotation using *m/z* and retention time:
 
 ## Annotation using *m/z* **and** retention time
@@ -1594,9 +1595,45 @@ mtch <- matchSpectra(query, target,
 python MS libraries (*matchms*, *MS2DeepScore*) into *Spectra*-based workflows.
 </div>
 
+
+## Spectra similarity calculation in *R*
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-annotation.png" width = 100>
+</div>
+
+<div>
+<div style="position:absolute; left:50px; top:120px;">
+<img src="images/Spectra-rainbow.png" width=140>
+</div>
+<div style="position:absolute; left:25%; top:178px;">
+```{r, eval = FALSE}
+simmat <- compareSpectra(a, b)
+```
+</div>
+</div>
+
+<div>
+<div style="position:absolute; left:50px; top:290px;">
+<img src="images/MetaboAnnotation.png" width=140>
+</div>
+<div style="position:absolute; left:25%; top:333px;">
+```{r, eval = FALSE}
+mtch <- matchSpectra(query, target,
+                     CompareSpectraParam())
+```
+</div>
+</div>
+
+<div style="position:absolute; left:50px; top:480px;">
+[*SpectriPy*](https://github.com/RforMassSpectrometry/SpectriPy): integrate
+python MS libraries (*matchms*, *MS2DeepScore*) into *Spectra*-based workflows.
+</div>
+
 <div style="position:absolute; left:50px; top:580px;">
 - **Limitation**: availability of reference spectra.
-- Public reference databases are growing, collecting data shared by researchers.
+- Public reference databases are growing, collecting data shared by researchers;
+  problem is the lack in standardization.
 </div>
 
 
