@@ -111,7 +111,7 @@ tmp <- lapply(req_libs, function(z) {
 - :one: an **annotation resource**: reference information on entities or a
   mapping of one type of identifiers to another.
 - :two: a **rule** that defines how to assign labels to entities
-- *examples* (maybe through drawings?)
+- *examples*
   - cell types through presence of marker genes
 
 IMAGE
@@ -286,23 +286,20 @@ counting.
 
 - Centrally managed annotation resources.
 
-```{r, echo = TRUE}
+```{r}
+#| code-line-numbers: "1|3-4|5-6"
+#| echo: TRUE
+#| output-location: fragment
 library(AnnotationHub)
 
 #' Synchronize and cache AnnotationHub information locally
 ah <- AnnotationHub()
-```
-
-. . .
-
-```{r}
-#| echo: TRUE
-#| output-location: fragment
 #' List all available resources
 ah
 ```
 
-- :information_source: many resources are community provided :muscle:.
+. . .
+
 - Resources come in variety of different formats and data types.
 
 . . .
@@ -346,10 +343,8 @@ edb <- ah[["AH119325"]]
 edb
 ```
 
-- First time data is downloaded, subsequent calls will load the data from the
-  cache :muscle:
-
-. . .
+- :information_source: data is downloaded and cached. Subsequent calls will load
+  the data from the cache.
 
 ## Bioconductor annotation resources
 
@@ -364,6 +359,7 @@ org.Hs.eg.db
 
 - Most annotation resources provide mapping between gene identifiers or mapping
   to e.g. pathways.
+- Also available: *position-relative annotations*.
 
 ## Position-relative annotations {transition="none"}
 
@@ -393,8 +389,14 @@ org.Hs.eg.db
 ```{r}
 #| echo: TRUE
 #| output-location: fragment
+#' extract exon coordinates from resource downloaded form AnnotationHub
 exons(edb)
 ```
+
+. . .
+
+:information_source: such resources can also used to map e.g. between positions
+within a protein and the location of the encoding sequence in the genome.
 
 # {.center}
 
@@ -494,7 +496,7 @@ se
 se
 ```
 
-- :information_source: gene quantification data, 8 samples.
+:information_source: gene quantification data, 8 samples.
 
 . . .
 
@@ -511,7 +513,7 @@ head(ids)
 . . .
 
 - We've got Ensembl gene IDs.
-- *task*: get official HGNC gene symbols (names) the genes.
+- :dart: get official HGNC gene symbols (names) the genes.
 
 . . .
 
@@ -528,6 +530,9 @@ columns(org.Hs.eg.db)
 
 ```{r}
 #| echo: TRUE
+#| code-line-numbers: "1-2|3"
+#| output-location: fragment
+#' map Ensembl gene IDs to official gene symbols
 symbols <- mapIds(org.Hs.eg.db, keys = ids, keytype = "ENSEMBL",
                   column = "SYMBOL", multiVals = "first")
 head(symbols)
@@ -535,10 +540,11 @@ head(symbols)
 
 . . .
 
-- `multiVals`... to handle ambiguity; default is `"first"` but there are other
-  options too.
-- :information_source: that's one way; we could also use *ensembldb*'s `EnsDb`
-  resources (to ensure we use the same release versions).
+:information_source: `multiVals`... to handle ambiguity; default is `"first"`
+but there are other options too.
+
+:information_source: that's one way; we could also use *ensembldb*'s `EnsDb`
+resources (to ensure we use the same release versions).
 
 . . .
 
@@ -550,7 +556,7 @@ symbols <- mapIds(edb, keys = ids, keytype = "GENEID",
 
 ## Annotation for enrichment analysis
 
-- :dart: going one step further ... annotating genes to biological pathways.
+- going one step further ... :dart: annotating genes to biological pathways.
 
 #### Drawing:
 
@@ -567,6 +573,7 @@ symbols <- mapIds(edb, keys = ids, keytype = "GENEID",
 ```{r}
 #| echo: TRUE
 #| output-location: fragment
+#| code-line-numbers: "1|3-4"
 library(reactome.db)
 
 #' Available data
@@ -575,7 +582,8 @@ columns(reactome.db)
 
 . . .
 
-- :information_source: gene identifiers: NCBI EntrezGene IDs.
+:information_source: gene identifiers: NCBI EntrezGene IDs.
+
 - get gene and pathway IDs for all genes.
 
 . . .
@@ -583,6 +591,7 @@ columns(reactome.db)
 ```{r}
 #| echo: TRUE
 #| output-location: fragment
+#| code-line-numbers: "1-2|3"
 mapping <- select(reactome.db, keys = keys(reactome.db),
                   columns = c("ENTREZID", "PATHID"))
 head(mapping)
@@ -595,6 +604,7 @@ head(mapping)
 ```{r}
 #| echo: TRUE
 #| output-location: fragment
+#| code-line-numbers: "1|2"
 gs <- split(mapping$ENTREZID, mapping$PATHID)
 gs[1:2]
 ```
@@ -629,13 +639,12 @@ res <- sbea(method = "ora", se, gs = gs)
 
 . . .
 
-- :information_source: *EnrichmentBrowser* makes the mapping easier with
-  its`idMap()` and `getGenesets()` functions.
-
+:information_source: *EnrichmentBrowser* makes the mapping easier with
+its `idMap()` and `getGenesets()` functions.
 
 ## Annotating mass spectrometry data
 
-- ... more on that on Thursday ...
+- ... :eyes: Thursday's Metabolomics lecture ...
 
 ## Annotating cell types
 
