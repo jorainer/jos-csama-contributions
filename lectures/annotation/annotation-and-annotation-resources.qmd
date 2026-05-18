@@ -93,8 +93,8 @@ tmp <- lapply(req_libs, function(z) {
 - :two: a **rule** that defines how to assign labels to entities
 - *examples*
   - map between gene identifiers (Ensembl, NCBI, ...)
-  
-  IMAGE
+
+![](images/annotation-gene.png){.absolute left=100 width="800"}
   
 ## What do we need for annotation? {transition="none"}
 
@@ -104,7 +104,8 @@ tmp <- lapply(req_libs, function(z) {
 - *examples*
   - annotate through sequence similarity: map short reads to genome
   
-  IMAGE
+![](images/annotation-sequence.png){.absolute left=100 width="800"}
+
 
 ## What do we need for annotation? {transition="none"}
 
@@ -114,7 +115,7 @@ tmp <- lapply(req_libs, function(z) {
 - *examples*
   - cell types through presence of marker genes
 
-IMAGE
+![](images/annotation-cell.png){.absolute left=100 width="800"}
 
 . . .
 
@@ -284,7 +285,7 @@ counting.
 
 . . .
 
-- Centrally managed annotation resources.
+- Central registry for annotation resources.
 
 ```{r}
 #| code-line-numbers: "1|3-4|5-6"
@@ -349,6 +350,9 @@ edb
 ## Bioconductor annotation resources
 
 - ... and there are also dedicated R packages with specific annotations.
+
+. . .
+
 - *example*: identifiers and metadata for human genes.
 
 ```{r}
@@ -406,12 +410,11 @@ within a protein and the location of the encoding sequence in the genome.
 
 ## Annotating RNA-seq, raw reads
 
+![](images/annotation-sequence.png){width="800"}
 
-**Drawing**
-
-- short RNA read -> map to genome, get positional mappings.
-- positions: use TxDb, EnsDb to get 
-
+- (Short) RNA reads 
+- :point_right: map to genome 
+- :point_right: count number of reads within exons of genes
 
 ## Annotation RNA-seq, raw reads
 
@@ -488,6 +491,9 @@ se
 ## Annotating gene information
 
 - Common task in annotation: add additional metadata to existing identifiers.
+
+. . .
+
 - *example*: bulk RNA-seq data *airway*:
 
 ```{r}
@@ -530,7 +536,7 @@ columns(org.Hs.eg.db)
 
 ```{r}
 #| echo: TRUE
-#| code-line-numbers: "1-2|3"
+#| code-line-numbers: "1-3|4"
 #| output-location: fragment
 #' map Ensembl gene IDs to official gene symbols
 symbols <- mapIds(org.Hs.eg.db, keys = ids, keytype = "ENSEMBL",
@@ -543,26 +549,19 @@ head(symbols)
 :information_source: `multiVals`... to handle ambiguity; default is `"first"`
 but there are other options too.
 
-:information_source: that's one way; we could also use *ensembldb*'s `EnsDb`
-resources (to ensure we use the same release versions).
-
-. . .
-
-```{r}
-#| echo: TRUE
-symbols <- mapIds(edb, keys = ids, keytype = "GENEID",
-                  column = "SYMBOL", multiVals = "first")
-```
-
 ## Annotation for enrichment analysis
 
 - going one step further ... :dart: annotating genes to biological pathways.
 
-#### Drawing:
+. . .
 
-- gene identifiers left, pathways right.
-- need to map between them using the same identifier.
-- map Ensembl genes to EntrezIds.
+::: {.center}
+![](images/annotation-pathway.png){width="800"}
+:::
+
+- :point_right: define gene sets.
+- :point_right: map identifiers to gene identifiers used in pathway annotation
+  resource.
 
 ## Annotation for enrichment analysis
 
@@ -582,11 +581,11 @@ columns(reactome.db)
 
 . . .
 
-:information_source: gene identifiers: NCBI EntrezGene IDs.
-
-- get gene and pathway IDs for all genes.
+:information_source: gene identifiers: resource uses NCBI EntrezGene IDs.
 
 . . .
+
+- Define the gene sets.
 
 ```{r}
 #| echo: TRUE
@@ -611,7 +610,7 @@ gs[1:2]
 
 . . .
 
-- Annotate the Ensembl gene IDs to NCBI EntrezGene IDs with `mapIds()`.
+- Map input genes from Ensembl to EntrezGene IDs.
 
 ```{r}
 #| echo: TRUE
@@ -646,13 +645,57 @@ its `idMap()` and `getGenesets()` functions.
 
 - ... :eyes: Thursday's Metabolomics lecture ...
 
-## Annotating cell types
+## Annotating single-cell RNA-seq
 
-- single cell things.
-- presence of marker genes.
+:dart: cell type recognition from single-cell RNA-seq data.
 
-https://eur03.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.bioconductor.org%2Fpackages%2Frelease%2Fbioc%2Fhtml%2FSingleR.html&data=05%7C02%7CJohannes.Rainer%40eurac.edu%7Ca5ef0a729b264253177808deaaa53ee5%7C9251326703e3401a80d4c58ed6674e3b%7C0%7C0%7C639135823868571203%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=%2FLc1d%2FNC41cWamIy46XugMZlqvhQoaW2tKbRscUFDdk%3D&reserved=0
+. . .
 
+[SingleR](https://bioconductor.org/packages/SingleR) package:
+
+:point_right: reference gene expression data for known (pure) cell types.
+
+:point_right: unbiased annotation by comparing single-cell gene expression
+against reference.
+
+. . .
+
+- Load reference dataset using *celldex*: Human Primary Cell Atlas
+
+```{r}
+#| echo: TRUE
+#| output-location: fragment
+#| code-line-numbers: "1-2|3"
+library(celldex)
+hpca_se <- HumanPrimaryCellAtlasData()
+hpca_se
+```
+
+. . .
+
+- Test data set: [@la_manno_molecular_2016], subset to first 100 cells
+
+```{r}
+#| echo: TRUE
+library(scRNAseq)
+hESCs <- LaMannoBrainData("human-es")
+hESCs <- hESCs[, 1:100]
+```
+
+. . .
+
+- Annotate each cell based on (non-parametric) correlation of gene expression
+  data between test and reference.
+
+```{r}
+#| echo: TRUE
+#| output-location: fragment
+#| code-line-numbers: "1-3|4"
+library(SingleR)
+pred_ct <- SingleR(test = hESCs, ref = hpca_se, assay.type.test = 1,
+                   labels = hpca_se$label.main)
+pred_ct
+```
 
 ## {.center}
 
