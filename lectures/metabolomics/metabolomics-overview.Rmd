@@ -1,5 +1,5 @@
 ---
-title: "Metabolomics"
+title: "Metabolomics, Introduction and Data Analysis"
 author: "Johannes Rainer<br><strong>Eurac Research, Institute for
 Biomedicine</strong>, Bolzano, Italy<br>johannes.rainer@eurac.edu<br>github:
   jorainer<br>mastodon: @jorainer@fediscience.org <br>
@@ -72,7 +72,7 @@ knitr::include_graphics("images/Glycolysis_01.png")
 <div style="font-size: 100%;">
 - Key metabolic pathway common to all cells.
 - Creates energy by converting glucose to pyruvate.
-<div>
+</div>
 
 <div class="notes">
 So if we go in a bit more depth in the glycolysis pathway... important 
@@ -261,123 +261,20 @@ Quantify metabolites to study SLC22A5's function and **activity**.
 - Provide information on activity and the function of the protein.
 </div>
 
-## Biological molecules {.notransition}
-
-<div style="position:absolute; top:40%;">
-- **Gene**
-- Transcript
-- Protein
-- **Metabolite**
-</div>
-
-<div style="position:absolute; left:25%; top:15%;">
-<img src="images/SLC22A5-003.png" width = 650>
-</div>
-
-<div style="position:absolute; left:45%; top:72%; font-size: 70%">
-SLC22A5
-</div>
-
-<div style="position:absolute; top:90%">
-Activity is influenced by genetic variants
-</div>
-
-## Biological molecules {.notransition}
-
-<div style="position:absolute; top:40%;">
-- **Gene**
-- Transcript
-- Protein
-- **Metabolite**
-</div>
-
-<div style="position:absolute; left:25%; top:15%;">
-<img src="images/SLC22A5-004.png" width = 650>
-</div>
-
-<div style="position:absolute; left:45%; top:72%; font-size: 70%">
-SLC22A5
-</div>
-
-<div style="position:absolute; top:90%">
-Activity is influenced by genetic variants
-</div>
-
-<div style="position:absolute; left:45%; top:97%; font-size: 60%; color: #888888">
-[König et al. Metabolites 2022;12(7):604. doi: 10.3390/metabo12070604.]
-</div>
-
-## Biological molecules {.notransition}
-
-<div style="position:absolute; top:40%;">
-- **Gene**
-- Transcript
-- Protein
-- **Metabolite**
-</div>
-
-<div style="position:absolute; left:25%; top:15%;">
-<img src="images/SLC22A5-004.png" width = 650>
-</div>
-
-<div style="position:absolute; left:45%; top:72%; font-size: 70%">
-SLC22A5
-</div>
-
-<div style="position:absolute; top:90%"> 
-ℹ️ by quantifying metabolites we can study the **effect** of genetic variants 
-on protein functions.
-</div>
-
-<div style="position:absolute; left:45%; top:97%; font-size: 60%; color: #888888">
-[König et al. Metabolites 2022;12(7):604. doi: 10.3390/metabo12070604.]
-</div>
-
-## Biological molecules {.notransition}
-
-- Relationship between metabolite concentrations and dietary habits.
-
-<div>
-<img src="images/food_items-lm-coefficient-heatmap-1.png" width = 750>
-<div style="position:absolute; left: 40px; top:95%; font-size:70%; color:#808080;">
-</div>
-</div>
-
-<div style="position:absolute; left:45%; top:97%; font-size: 60%; color: #888888">
-[Verri et al. MDPI Metabolites 2022. DOI: 10.3390/metabo12030205]
-</div>
-
-## Biological molecules {.notransition}
-
-- Metabolite abundances are also influenced by external factors.
-- Relationship between metabolite concentrations and dietary habits:
-
-<div>
-<img src="images/food_items-lm-coefficient-heatmap-1.png" width = 750>
-<div style="position:absolute; left: 40px; top:95%; font-size:70%; color:#808080;">
-</div>
-</div>
-
-<div style="position:absolute; top:90%">
-👉 metabolites provide insights into current metabolic state of an organism.
-</div>
-
-<div style="position:absolute; left:45%; top:97%; font-size: 60%; color: #888888">
-[Verri et al. Metabolites 2022. DOI: 10.3390/metabo12030205]
-</div>
-
 
 ## Metabolome {.build}
 
-### Set of all metabolites in a system at a time
+Set of all metabolites in a system at a time
 
-### Properties of the metabolome:
+ℹ️ Studying the metabolome can provide insights into the metabolic state of an organism.
 
-</div>
+Properties of the metabolome:
+
 <div>
 - Metabolome influenced by **genetic** *and* **environmental factors**.
 - Metabolome is **highly dynamic**.
 </div>
+
 
 ## Metabolomics? {.build}
 
@@ -387,10 +284,10 @@ on protein functions.
 **What** are we measuring? ... depends on context:
 </div>
 <div>
-  - metabolomics in life sciences: metabolites, lipids, ...
+  - life sciences: metabolites, lipids, ...
 </div>
 <div>
-  - plant and food metabolomics: metabolites, polyphenoles, ...
+  - plant and food sciences: metabolites, polyphenoles, ...
 </div>
 <div>
   - exposomics: chemicals, pharmaceuticals, ...
@@ -514,7 +411,9 @@ exposomics: what individuals are exposed to in their life
 - **untargeted metabolomics**: semi-quantitative measurement of all metabolites
   (detectable with the setup) in a sample.
 
-<div class="notes"> Targeted mass spectrometry is designed to detect and
+<div class="notes"> 
+
+Targeted mass spectrometry is designed to detect and
 quantify specific, predefined compounds. In this approach, we focus on
 monitoring selected ions that correspond to known compounds. This method
 provides high sensitivity and specificity, making it ideal for applications such
@@ -900,7 +799,13 @@ Signal along rt (chromatogram) of an [M+Na]+ ion of *C6H12O6*.
 </div>
 </div>
 
-## Mass spectrometry data analysis in *R* {.build}
+## {}
+
+<div style = "font-size: 300%; position:absolute; top:50%; left:5%">
+<h1>MS data analysis in *R*</h1>
+</div>
+
+## Mass spectrometry data analysis in *R*
 
 <div>
 <div style="position:absolute; left:5%; top:35%;">
@@ -1022,7 +927,7 @@ Ecosystem of R packages covering different parts of MS data analysis.
 
 <div style="position:absolute; left:25%; top:12%;">
 <img src="images/workflowV2.png" width = 450>
-<div>
+</div>
 
 ## MS data import{.build}
 
@@ -1143,7 +1048,7 @@ std_data <- refineChromPeaks(std_data, MergeNeighboringPeaksParam(expandRt = 3))
 </div>
 
 <div style="position:absolute; left:23%; top:375px;">
-`findChromPeaks`
+`findChromPeaks()`
 </div>
 
 <div style="position:absolute; left:20%; top:55%">
@@ -1175,7 +1080,7 @@ std_data <- refineChromPeaks(std_data, MergeNeighboringPeaksParam(expandRt = 3))
 </div>
 
 <div style="position:absolute; left:23%; top:375px;">
-`adjustRtime`
+`adjustRtime()`
 </div>
 
 <div style="position:absolute; left:20%; top:55%">
@@ -1212,7 +1117,7 @@ std_data <- refineChromPeaks(std_data, MergeNeighboringPeaksParam(expandRt = 3))
 </div>
 
 <div style="position:absolute; left:23%; top:375px;">
-`groupChromPeaks`
+`groupChromPeaks()`
 </div>
 
 
@@ -1242,7 +1147,7 @@ std_data <- refineChromPeaks(std_data, MergeNeighboringPeaksParam(expandRt = 3))
 </div>
 
 <div style="position:absolute; left:23%; top:375px;">
-`featureValues`
+`featureValues()`
 </div>
 
 <div style="position:absolute; left:15%; top:60%; font-size:50%;">
@@ -1306,6 +1211,12 @@ fts
 ```{r, echo = FALSE, message = FALSE}
 fts
 ```
+</div>
+
+## {}
+
+<div style = "font-size: 300%; position:absolute; top:50%; left:5%">
+<h1>Annotation</h1>
 </div>
 
 ## One step back: ionization
@@ -1466,7 +1377,7 @@ pandoc.table(cmps, style = "rmarkdown")
 
 - Structure can have an influence on the polarity of compounds and thus they
   will separate in the LC: 👉 different retention time.
-- Annotation using *m/z* and retention time:
+- Annotation using *m/z* **and** retention time:
 
 ## Annotation using *m/z* **and** retention time
 
@@ -1493,7 +1404,7 @@ mtch <- matchValues(query, target,
 - Requires that we do have **reference** retention times available.
 - These are instrument set-up/lab-specific.
 
-## Annotation using MS2 spectra
+## MS2-based annotation
 
 <div style="position:absolute; right:1%; top:1%;">
 <img src="images/workflow-annotation.png" width = 100>
@@ -1506,7 +1417,7 @@ mtch <- matchValues(query, target,
 <img src="images/MSMS.png" width = 800>
 </div>
 
-## Annotation using MS2 spectra
+## MS2-based annotation
 
 <div style="position:absolute; right:1%; top:1%;">
 <img src="images/workflow-annotation.png" width = 100>
@@ -1524,7 +1435,7 @@ mtch <- matchValues(query, target,
 - LC-MS/MS data: MS1 for quantification, MS2 for annotation.
 </div>
 
-## Annotation using MS2 spectra
+## MS2-based annotation
 
 <div style="position:absolute; right:1%; top:1%;">
 <img src="images/workflow-annotation.png" width = 100>
@@ -1533,7 +1444,7 @@ mtch <- matchValues(query, target,
 - If we have MS2 spectra associated to features, we can match them against
   *reference* spectra.
 
-## Annotation using MS2 spectra
+## MS2-based annotation
 
 <div style="position:absolute; right:1%; top:1%;">
 <img src="images/workflow-annotation.png" width = 100>
@@ -1543,7 +1454,7 @@ mtch <- matchValues(query, target,
   *reference* spectra.
 - Calculate spectral similarity between query and reference.
 
-## Annotation using MS2 spectra
+## MS2-based annotation
 
 <div style="position:absolute; right:1%; top:1%;">
 <img src="images/workflow-annotation.png" width = 100>
@@ -1636,22 +1547,45 @@ python MS libraries (*matchms*, *MS2DeepScore*) into *Spectra*-based workflows.
   problem is the lack in standardization.
 </div>
 
+## {}
 
-## Workshops {.build}
+<div style = "font-size: 300%; position:absolute; top:50%; left:5%">
+<h1>Workshop(s)</h1>
+</div>
+
+## Workshops
 
 <div>
 https://RforMassSpectrometry.github.io/Metabonaut
-<img src="images/metabonaut-home.png" width=500>
+<img src="images/2026-01-08-153057_hyprshot.png" width=700>
 </div>
 
-<div style="position:absolute; left:57%; top:30%;">
-- end-to-end workflow
-- smaller tutorials
-- docker image for interactive usage
+## Workshops
+
+<div>
+https://RforMassSpectrometry.github.io/Metabonaut
+<img src="images/2026-01-08-153144_hyprshot.png" width=700>
+</div>
+
+<div style="position:absolute; left:5%; top:85%;">
+- different workflows/use cases available
+</div>
+
+## Workshops
+
+<div>
+https://RforMassSpectrometry.github.io/Metabonaut
+<img src="images/2026-01-08-153557_hyprshot.png" width=700>
+</div>
+
+
+<div style="position:absolute; left:5%; top:85%;">
+- pre-rendered for easy browsing
+- docker image for interactive use
 </div>
 
 ## {.build}
 
-<div style="position:absolute; top:48%; left:33%;">
-**Thank you for your attention**
+<div style="position:absolute; top:48%; left:5%; font-size: 200%">
+**Thank you for your attention 🙌**
 </div>
