@@ -46,8 +46,8 @@ webshot function from webshot package.
 Might have to change stuff in the style sheet to make it working.
 library(webshot)
 install_phantomjs()
-fn <- paste0("file://", normalizePath("metabolomics.html"))
-rmdshot("metabolomics.Rmd", "metabolomics.pdf")
+fn <- paste0("file://", normalizePath("metabolomics-overview.html"))
+rmdshot("metabolomics-overview.Rmd", "metabolomics-overview.pdf")
 -->
 
 <!--
