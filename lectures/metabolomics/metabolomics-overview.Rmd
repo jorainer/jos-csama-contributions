@@ -2,8 +2,7 @@
 title: "Metabolomics, Introduction and Data Analysis"
 author: "Johannes Rainer<br><strong>Eurac Research, Institute for
 Biomedicine</strong>, Bolzano, Italy<br>johannes.rainer@eurac.edu<br>github:
-  jorainer<br>mastodon: @jorainer@fediscience.org <br>
-  bluesky: jorainer"
+  jorainer"
 date: "**CSAMA 2026**"
 output: 
   ioslides_presentation:
@@ -1386,7 +1385,7 @@ pandoc.table(cmps, style = "rmarkdown")
 </div>
 
 - Structure can have an influence on the polarity of compounds and thus they
-  will separate in the LC: -> different retention time.
+  will separate in the LC: 👉 different retention time.
 - Annotation using *m/z* and retention time:
 
 <div>
@@ -1467,10 +1466,23 @@ mtch <- matchValues(query, target,
 <div style="float:left;">
 <img src="images/massbank-mirror-plot-1.png" width = 400>
 </div>
+
+## MS2-based annotation
+
+<div style="position:absolute; right:1%; top:1%;">
+<img src="images/workflow-annotation.png" width = 100>
+</div>
+
+- If we have MS2 spectra associated to features, we can match them against
+  *reference* spectra.
+- Calculate spectral similarity between query and reference.
+
+<div style="float:left;">
+<img src="images/massbank-mirror-plot-1.png" width = 400>
+</div>
 <div style="float:left;">
 <img src="images/massbank-mirror-plot-low-1.png" width = 400>
 </div>
-
 
 ## Spectra similarity calculation in *R*
 
